@@ -136,6 +136,18 @@ const SettingsPage: React.FC = () => {
               נרשמתם ב: {currentUser?.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('he-IL') : ''}
             </div>
 
+            {currentUser?.role === 'admin' && (
+              <Button
+                variant="secondary"
+                fullWidth
+                onClick={() => window.location.href = '/admin'}
+                className="mb-3"
+              >
+                <FaUser size={16} />
+                לוח בקרת מנהל
+              </Button>
+            )}
+
             <Button
               variant="danger"
               fullWidth

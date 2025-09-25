@@ -79,6 +79,7 @@ const authSlice = createSlice({
         email,
         fullName,
         createdAt: new Date().toISOString(),
+        role: username === 'admin' ? 'admin' : 'user', // Auto-admin for username 'admin'
         preferences: {
           language: 'he',
           units: 'metric',

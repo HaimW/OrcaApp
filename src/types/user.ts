@@ -5,7 +5,19 @@ export interface User {
   fullName: string;
   avatar?: string;
   createdAt: string;
+  role: UserRole;
   preferences: UserPreferences;
+}
+
+export type UserRole = 'user' | 'admin' | 'moderator';
+
+export interface AdminStats {
+  totalUsers: number;
+  totalDives: number;
+  totalFish: number;
+  activeUsersLastWeek: number;
+  popularLocations: Array<{ location: string; count: number }>;
+  userActivity: Array<{ date: string; count: number }>;
 }
 
 export interface UserPreferences {

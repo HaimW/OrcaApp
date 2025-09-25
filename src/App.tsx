@@ -9,6 +9,7 @@ import EntriesPage from './pages/EntriesPage';
 import AddEntryPage from './pages/AddEntryPage';
 import StatsPage from './pages/StatsPage';
 import SettingsPage from './pages/SettingsPage';
+import AdminPage from './pages/AdminPage';
 import EntryDetailPage from './pages/EntryDetailPage';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
         <Route path="/edit/:id" element={<AddEntryPage />} />
         <Route path="/stats" element={<StatsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
       <BottomNav />
     </div>
