@@ -9,10 +9,19 @@
     @apply border-gray-200;
   }
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply text-gray-900;
     font-family: 'Heebo', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     direction: rtl;
+    /* Ocean background with overlay */
+    background-image: 
+      linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
+      url('https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=1920&h=1080&fit=crop&crop=center');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100vh;
   }
 }
 
@@ -38,11 +47,11 @@
   }
   
   .card {
-    @apply rounded-xl border border-gray-200 bg-white shadow-sm;
+    @apply rounded-xl border border-gray-200 bg-white/90 backdrop-blur-sm shadow-lg;
   }
   
   .surface {
-    @apply bg-white border border-gray-100 rounded-xl shadow-sm;
+    @apply bg-white/85 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg;
   }
   
   .gradient-ocean {
@@ -51,6 +60,26 @@
   
   .gradient-sunset {
     background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
+  }
+  
+  /* Ocean-themed text shadows for better readability */
+  .text-ocean-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Glass morphism effect for containers */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Enhanced card for ocean theme */
+  .ocean-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
 }
 
