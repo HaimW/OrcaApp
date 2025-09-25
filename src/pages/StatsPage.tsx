@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useAppSelector } from '../hooks/useAppSelector';
+import { useAppSelector } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import { 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch } from '../hooks/useAppDispatch';
-import { useAppSelector } from '../hooks/useAppSelector';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { addDiveEntry, updateDiveEntry } from '../store/slices/diveEntriesSlice';
 import Header from '../components/Layout/Header';
 import DiveEntryForm from '../components/Forms/DiveEntryForm';
