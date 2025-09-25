@@ -1,98 +1,119 @@
-// Orca images from Getty Images - Professional quality photos
+// Orca images from Unsplash - Free high-quality photos
 export const orcaImages = [
   {
-    id: 'orca-underwater',
-    url: 'https://media.gettyimages.com/id/1311571732/photo/killer-whale-orca-swimming-beneath-the-surface-of-the-ocean.jpg?s=612x612&w=0&k=20&c=tS8qjG3TqOqFkVpihQzFQx4L_OhcVh9dO1hq8Q6sFqE=',
-    alt: 'אורקה שוחה מתחת לפני המים',
-    description: 'אורקה מתחת למים בצלילה עמוקה'
+    id: 'orca-swimming-pair',
+    url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=400&fit=crop&crop=center',
+    alt: 'זוג אורקות שוחות במים',
+    description: 'זוג אורקות שוחות יחד במים כחולים',
+    photographer: 'Vidar Nordli-Mathisen'
   },
   {
-    id: 'orca-jumping',
-    url: 'https://media.gettyimages.com/id/1158370104/photo/multiple-exposure-of-an-orca-whale-jumping-in-the-ocean.jpg?s=612x612&w=0&k=20&c=YpD_VlSZhHZJhG-VnMQqe4OJzJZ_Kn3xRFoWjD7_4yE=',
-    alt: 'אורקה קופצת מהמים',
-    description: 'אורקה בקפיצה מרהיבה מהמים'
+    id: 'orca-black-white',
+    url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop&crop=center',
+    alt: 'אורקה בשחור לבן',
+    description: 'אורקה במים בצילום שחור לבן מרהיב',
+    photographer: 'Iewek Gnos'
   },
   {
-    id: 'orca-bow-riding',
-    url: 'https://media.gettyimages.com/id/1185574104/photo/orcas-bow-riding.jpg?s=612x612&w=0&k=20&c=5DsGGJMxvhZ_4OJjzL_Kn3xRFoWjD7_4yE8qjG3TqOq=',
-    alt: 'אורקות ליד סירה',
-    description: 'להקת אורקות שוחה ליד הסירה'
+    id: 'orca-ocean-swimming',
+    url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop&crop=top',
+    alt: 'אורקה שוחה באוקיינוס',
+    description: 'אורקה שוחה באוקיינוס הכחול',
+    photographer: 'Zdeněk Macháček'
   },
   {
-    id: 'orca-mt-baker',
-    url: 'https://media.gettyimages.com/id/155438285/photo/southern-resident-killer-whale-with-mt-baker.jpg?s=612x612&w=0&k=20&c=4OJjzL_Kn3xRFoWjD7_4yE8qjG3TqOqFkVpihQzFQx=',
-    alt: 'אורקה עם נוף הרים ברקע',
-    description: 'אורקה בנוף טבעי מרהיב'
+    id: 'orca-daylight',
+    url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop&crop=bottom',
+    alt: 'אורקה באור יום',
+    description: 'אורקה במים באור יום טבעי',
+    photographer: 'Mike Doherty'
   },
   {
-    id: 'orca-spy-hopping',
-    url: 'https://media.gettyimages.com/id/1204663142/photo/an-orca-takes-the-head-out-of-the-water-to-observe-the-surroundings.jpg?s=612x612&w=0&k=20&c=L_Kn3xRFoWjD7_4yE8qjG3TqOqFkVpihQzFQx4L_Oh=',
-    alt: 'אורקה מציצה מהמים',
-    description: 'אורקה מוציאה ראש מהמים לתצפית'
+    id: 'orca-duo',
+    url: 'https://images.unsplash.com/photo-1507808973436-a4ed7b5e87c9?w=400&h=400&fit=crop&crop=center',
+    alt: 'שתי אורקות',
+    description: 'שתי אורקות שוחות בגוף מים',
+    photographer: 'Stephen Walker'
   },
   {
-    id: 'orca-chatham-strait',
-    url: 'https://media.gettyimages.com/id/598020036/photo/killer-whale-orcinus-orca-breaching-in-chatham-strait-southeast-alaska.jpg?s=612x612&w=0&k=20&c=n3xRFoWjD7_4yE8qjG3TqOqFkVpihQzFQx4L_OhcVh=',
-    alt: 'אורקה באלסקה',
-    description: 'אורקה קופצת במצר צ\'טהם, אלסקה'
+    id: 'whale-jump',
+    url: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=400&h=400&fit=crop&crop=center',
+    alt: 'לוויתן קופץ מהמים',
+    description: 'לוויתן קופץ מהמים בתנועה מרהיבה',
+    photographer: 'Rudi De Meyer'
   },
   {
-    id: 'orca-frederick-sound',
-    url: 'https://media.gettyimages.com/id/1223584104/photo/orca-or-killer-whale-in-frederick-sound.jpg?s=612x612&w=0&k=20&c=RFoWjD7_4yE8qjG3TqOqFkVpihQzFQx4L_OhcVh9dO=',
-    alt: 'אורקה במפרץ פרדריק',
-    description: 'אורקה שוחה במפרץ פרדריק'
+    id: 'orca-water-surface',
+    url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop&crop=faces',
+    alt: 'אורקה על פני המים',
+    description: 'אורקה במים ליד פני השטח',
+    photographer: 'Nitesh Jain'
   },
   {
-    id: 'orca-norway-sunrise',
-    url: 'https://media.gettyimages.com/id/1180074104/photo/spy-hopping-male-killer-whale-at-sunrise-kvaenangen-fjord-norway.jpg?s=612x612&w=0&k=20&c=WjD7_4yE8qjG3TqOqFkVpihQzFQx4L_OhcVh9dO1hq=',
-    alt: 'אורקה בנורווגיה בזריחה',
-    description: 'אורקה זכר בפיורד קוונאנגן, נורווגיה'
+    id: 'killer-whales-trio',
+    url: 'https://images.unsplash.com/photo-1507808973436-a4ed7b5e87c9?w=400&h=400&fit=crop&crop=top',
+    alt: 'שלוש אורקות',
+    description: 'שלוש אורקות צפות על המים',
+    photographer: 'Bart'
   },
   {
-    id: 'orca-family',
-    url: 'https://media.gettyimages.com/id/157484104/photo/killer-whale-family-jumping-out-of-water.jpg?s=612x612&w=0&k=20&c=7_4yE8qjG3TqOqFkVpihQzFQx4L_OhcVh9dO1hq8Q6=',
-    alt: 'משפחת אורקות',
-    description: 'משפחת אורקות קופצת יחד'
+    id: 'orcas-sunrise',
+    url: 'https://images.unsplash.com/photo-1507808973436-a4ed7b5e87c9?w=400&h=400&fit=crop&crop=bottom',
+    alt: 'אורקות בזריחה',
+    description: 'שתי אורקות במים בזמן זריחה',
+    photographer: 'Bart'
   },
   {
-    id: 'orca-new-zealand',
-    url: 'https://media.gettyimages.com/id/1334574104/photo/female-orca-swimming-in-blue-water-near-the-surface.jpg?s=612x612&w=0&k=20&c=4yE8qjG3TqOqFkVpihQzFQx4L_OhcVh9dO1hq8Q6sF=',
-    alt: 'אורקה נקבה בניו זילנד',
-    description: 'אורקה נקבה שוחה במים כחולים'
+    id: 'killer-whale-top',
+    url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop&crop=entropy',
+    alt: 'אורקה מעל המים',
+    description: 'אורקה מעל פני המים',
+    photographer: 'Tim Cole'
   },
   {
-    id: 'orca-antarctica',
-    url: 'https://media.gettyimages.com/id/1256874104/photo/orca-killer-whales-in-the-lemaire-chanel-antarctica.jpg?s=612x612&w=0&k=20&c=E8qjG3TqOqFkVpihQzFQx4L_OhcVh9dO1hq8Q6sFqE=',
-    alt: 'אורקות באנטארקטיקה',
-    description: 'אורקות בתעלת למייר, אנטארקטיקה'
+    id: 'whale-ocean-jump',
+    url: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=400&h=400&fit=crop&crop=top',
+    alt: 'לוויתן קופץ באוקיינוס',
+    description: 'לוויתן קופץ מהמים באוקיינוס',
+    photographer: 'Lachlan Gowen'
   },
   {
-    id: 'orca-encounter',
-    url: 'https://media.gettyimages.com/id/1178574104/photo/orca-encounter.jpg?s=612x612&w=0&k=20&c=qjG3TqOqFkVpihQzFQx4L_OhcVh9dO1hq8Q6sFqEt=',
-    alt: 'מפגש עם אורקה',
-    description: 'מפגש קרוב עם אורקה'
+    id: 'orca-ocean-swim',
+    url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop&crop=edges',
+    alt: 'אורקה שוחה באוקיינוס',
+    description: 'אורקה שחורה לבנה שוחה באוקיינוס',
+    photographer: 'Tomáš Malík'
   }
 ];
 
+// טיפוס לתמונת אורקה
+interface OrcaImageType {
+  id: string;
+  url: string;
+  alt: string;
+  description: string;
+  photographer: string;
+}
+
 // פונקציה לקבלת תמונה אקראית
-export const getRandomOrcaImage = () => {
+export const getRandomOrcaImage = (): OrcaImageType => {
   const randomIndex = Math.floor(Math.random() * orcaImages.length);
   return orcaImages[randomIndex];
 };
 
 // פונקציה לקבלת תמונה לפי ID
-export const getOrcaImageById = (id: string) => {
+export const getOrcaImageById = (id: string): OrcaImageType | undefined => {
   return orcaImages.find(img => img.id === id);
 };
 
 // פונקציה לקבלת כמה תמונות אקראיות
-export const getRandomOrcaImages = (count: number) => {
+export const getRandomOrcaImages = (count: number): OrcaImageType[] => {
   const shuffled = [...orcaImages].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 };
 
 // פונקציה לקבלת תמונה חדשה (לא זהה לקודמת)
-export const getNewOrcaImage = (currentImageId?: string) => {
+export const getNewOrcaImage = (currentImageId?: string): OrcaImageType => {
   const availableImages = orcaImages.filter(img => img.id !== currentImageId);
   const randomIndex = Math.floor(Math.random() * availableImages.length);
   return availableImages[randomIndex];

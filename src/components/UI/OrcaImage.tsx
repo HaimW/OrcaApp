@@ -94,7 +94,7 @@ export const OrcaImage: React.FC<OrcaImageProps> = ({
       {/* Credits */}
       {showCredits && (
         <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-b-lg">
-          Getty Images
+          📷 {currentImage.photographer || 'Unsplash'}
         </div>
       )}
     </div>
