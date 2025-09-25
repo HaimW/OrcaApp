@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from '../hooks';
 import Header from '../components/Layout/Header';
 import { Card } from '../components/UI/Card';
 import { Button } from '../components/UI/Button';
+import OrcaImage from '../components/UI/OrcaImage';
 import { 
   FaUsers, 
   FaWater, 
@@ -348,14 +349,20 @@ const AdminPage: React.FC = () => {
         {/* Admin Badge */}
         <div className="mb-6">
           <Card className="bg-gradient-to-l from-red-50 to-pink-50 border-red-200">
-            <div className="flex items-center gap-3">
-              <FaShieldAlt className="text-red-500 text-2xl" />
-              <div>
+            <div className="flex items-center gap-4">
+              <OrcaImage 
+                size="lg" 
+                shape="circle" 
+                specificImage="orca-spy-hopping"
+                showCredits={false}
+              />
+              <div className="flex-1">
                 <h2 className="text-lg font-bold text-red-800">ברוכים הבאים לוח הבקרה</h2>
                 <p className="text-sm text-red-600">
                   אתם מחוברים כמנהל מערכת עם הרשאות מלאות
                 </p>
               </div>
+              <FaShieldAlt className="text-red-500 text-2xl" />
             </div>
           </Card>
         </div>

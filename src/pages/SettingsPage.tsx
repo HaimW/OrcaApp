@@ -19,6 +19,7 @@ import {
 import { DiveEntry } from '../types';
 import { addSampleData } from '../utils/sampleData';
 import { resetAllData, createDefaultAdmin } from '../utils/resetData';
+import OrcaImage from '../components/UI/OrcaImage';
 
 const SettingsPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -258,8 +259,11 @@ const SettingsPage: React.FC = () => {
             </div>
             
             <div className="p-3 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-600 text-center">
-                אורקה - יומן צלילה מקצועי לדייגים
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <OrcaImage size="md" shape="circle" />
+                <div className="text-sm text-gray-600 text-center">
+                  אורקה - יומן צלילה מקצועי לדייגים
+                </div>
               </div>
             </div>
           </div>

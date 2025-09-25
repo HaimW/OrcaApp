@@ -4,6 +4,7 @@ import { useAppSelector } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
+import OrcaImage from '../components/UI/OrcaImage';
 import { 
   FaPlus, 
   FaList, 
@@ -35,14 +36,20 @@ const HomePage: React.FC = () => {
       <div className="p-4 space-y-6">
         {/* Welcome Section */}
         <div className="text-center py-8">
-          <div className="gradient-ocean rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <FaWater size={32} className="text-white" />
-          </div>
+          <OrcaImage 
+            size="xl" 
+            shape="circle" 
+            className="mx-auto mb-4"
+            showCredits={false}
+          />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             ברוכים הבאים לאורקה
           </h2>
           <p className="text-gray-600">
             יומן הצלילה המקצועי שלכם
+          </p>
+          <p className="text-xs text-gray-400 mt-2">
+            💡 לחצו על התמונה לתמונה חדשה
           </p>
         </div>
 

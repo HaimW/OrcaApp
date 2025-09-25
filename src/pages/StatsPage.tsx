@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useAppSelector } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
+import OrcaImage from '../components/UI/OrcaImage';
 import { 
   FaWater, 
   FaFish, 
@@ -110,7 +111,13 @@ const StatsPage: React.FC = () => {
       <div className="p-4 space-y-6">
         {diveEntries.length === 0 ? (
           <Card className="text-center py-12">
-            <FaChartBar className="text-gray-400 mx-auto mb-4" size={48} />
+            <OrcaImage 
+              size="xl" 
+              shape="circle" 
+              className="mx-auto mb-4"
+              specificImage="orca-family"
+              showCredits={false}
+            />
             <h3 className="text-lg font-semibold text-gray-600 mb-2">
               אין עדיין נתונים לסטטיסטיקות
             </h3>
@@ -253,6 +260,20 @@ const StatsPage: React.FC = () => {
                 </div>
               </Card>
             )}
+
+            {/* Orca Gallery */}
+            <Card>
+              <h3 className="text-lg font-semibold mb-4">גלריית אורקות</h3>
+              <div className="grid grid-cols-4 gap-3">
+                <OrcaImage size="lg" shape="rounded" specificImage="orca-underwater" />
+                <OrcaImage size="lg" shape="rounded" specificImage="orca-jumping" />
+                <OrcaImage size="lg" shape="rounded" specificImage="orca-norway-sunrise" />
+                <OrcaImage size="lg" shape="rounded" specificImage="orca-antarctica" />
+              </div>
+              <p className="text-xs text-gray-500 mt-3 text-center">
+                תמונות מקצועיות מ-Getty Images
+              </p>
+            </Card>
           </>
         )}
       </div>

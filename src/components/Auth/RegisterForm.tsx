@@ -4,6 +4,7 @@ import { registerUser, clearError } from '../../store/slices/authSlice';
 import { Button } from '../UI/Button';
 import { Input } from '../UI/Input';
 import { Card } from '../UI/Card';
+import OrcaImage from '../UI/OrcaImage';
 import { FaUser, FaEnvelope, FaUserTag, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface RegisterFormProps {
@@ -91,9 +92,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-6">
         <div className="text-center mb-6">
-          <div className="gradient-ocean rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center text-3xl">
-            🐋
-          </div>
+          <OrcaImage 
+            size="xl" 
+            shape="circle" 
+            className="mx-auto mb-4"
+            specificImage="orca-jumping"
+            showCredits={false}
+          />
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
             הצטרפו לאורקה
           </h1>
