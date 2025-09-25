@@ -13,15 +13,32 @@
     font-family: 'Heebo', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     direction: rtl;
-    /* Ocean background with overlay */
-    background-image: 
-      linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
-      url('https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=1920&h=1080&fit=crop&crop=center');
-    background-size: cover;
-    background-position: center;
+    /* Beautiful ocean gradient background */
+    background: linear-gradient(
+      135deg,
+      #0c4a6e 0%,     /* Deep ocean blue */
+      #0369a1 15%,    /* Ocean blue */
+      #0284c7 30%,    /* Sky blue */
+      #0ea5e9 45%,    /* Light blue */
+      #38bdf8 60%,    /* Cyan */
+      #7dd3fc 75%,    /* Light cyan */
+      #bae6fd 90%,    /* Very light blue */
+      #e0f2fe 100%    /* Almost white blue */
+    );
     background-attachment: fixed;
-    background-repeat: no-repeat;
+    background-size: 400% 400%;
+    animation: oceanWave 20s ease-in-out infinite;
     min-height: 100vh;
+  }
+  
+  /* Ocean wave animation */
+  @keyframes oceanWave {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
   }
 }
 
