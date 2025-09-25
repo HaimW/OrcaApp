@@ -20,6 +20,7 @@ const EntryDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { diveEntries } = useAppSelector((state) => state.diveEntries);
+  const { currentUser } = useAppSelector((state) => state.auth);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const entry = diveEntries.find(e => e.id === id);
@@ -55,7 +56,8 @@ const EntryDetailPage: React.FC = () => {
   };
 
   const handleDelete = () => {
-    dispatch(deleteDiveEntry(entry.id));
+    if (!currentUser) return;
+    dispatch(deleteDiveEntry({ entryId: entry.id, userId: currentUser.id }));
     navigate('/entries');
   };
 

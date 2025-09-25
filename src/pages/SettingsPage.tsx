@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { clearEntries, importEntries } from '../store/slices/diveEntriesSlice';
+import { logoutUser } from '../store/slices/authSlice';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
@@ -11,7 +12,9 @@ import {
   FaHeart,
   FaDatabase,
   FaFileExport,
-  FaFileImport
+  FaFileImport,
+  FaSignOutAlt,
+  FaUser
 } from 'react-icons/fa';
 import { DiveEntry } from '../types';
 import { addSampleData } from '../utils/sampleData';
@@ -19,6 +22,7 @@ import { addSampleData } from '../utils/sampleData';
 const SettingsPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { diveEntries } = useAppSelector((state) => state.diveEntries);
+  const { currentUser } = useAppSelector((state) => state.auth);
   const [showClearModal, setShowClearModal] = useState(false);
   const [importError, setImportError] = useState<string>('');
 
@@ -60,7 +64,9 @@ const SettingsPage: React.FC = () => {
           throw new Error('לא נמצאו צלילות תקינות בקובץ');
         }
 
-        dispatch(importEntries(validEntries));
+        if (currentUser) {
+          dispatch(importEntries({ entries: validEntries, userId: currentUser.id }));
+        }
         setImportError('');
         
         // Reset file input
@@ -76,7 +82,8 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleClearData = () => {
-    dispatch(clearEntries());
+    if (!currentUser) return;
+    dispatch(clearEntries(currentUser.id));
     setShowClearModal(false);
   };
 
@@ -90,6 +97,12 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    if (confirm('האם אתם בטוחים שברצונכם להתנתק?')) {
+      dispatch(logoutUser());
+    }
+  };
+
   const appVersion = '1.0.0';
   const buildDate = new Date().toLocaleDateString('he-IL');
 
@@ -98,6 +111,42 @@ const SettingsPage: React.FC = () => {
       <Header title="הגדרות" />
       
       <div className="p-4 space-y-6">
+        {/* User Profile */}
+        <Card>
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <FaUser className="text-blue-500" />
+            פרופיל משתמש
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="p-3 bg-gradient-to-l from-blue-50 to-cyan-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-bold">
+                  {currentUser?.fullName.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="font-medium text-gray-800">{currentUser?.fullName}</div>
+                  <div className="text-sm text-gray-600">@{currentUser?.username}</div>
+                  <div className="text-sm text-gray-500">{currentUser?.email}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-xs text-gray-500">
+              נרשמתם ב: {currentUser?.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('he-IL') : ''}
+            </div>
+
+            <Button
+              variant="danger"
+              fullWidth
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt size={16} />
+              התנתק מהמערכת
+            </Button>
+          </div>
+        </Card>
+
         {/* Data Management */}
         <Card>
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">

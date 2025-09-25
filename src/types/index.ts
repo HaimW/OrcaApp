@@ -1,5 +1,6 @@
 export interface DiveEntry {
   id: string;
+  userId: string; // Link to user
   date: string;
   time: string;
   location: string;
@@ -93,4 +94,7 @@ export interface FilterOptions {
   maxDepth?: number;
   minRating?: number;
 }
+
+// Export user types
+export * from './user';
 

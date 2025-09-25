@@ -13,6 +13,7 @@ const AddEntryPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const { diveEntries } = useAppSelector((state) => state.diveEntries);
+  const { currentUser } = useAppSelector((state) => state.auth);
   
   const isEditing = Boolean(id);
   const existingEntry = isEditing ? diveEntries.find(entry => entry.id === id) : undefined;
@@ -54,17 +55,20 @@ const AddEntryPage: React.FC = () => {
   }, [existingEntry]);
 
   const handleSubmit = (data: Partial<DiveEntry>) => {
+    if (!currentUser) return;
+
     const entry: DiveEntry = {
       id: isEditing ? id! : uuidv4(),
+      userId: currentUser.id,
       ...data as DiveEntry,
       createdAt: isEditing ? existingEntry!.createdAt : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
     if (isEditing) {
-      dispatch(updateDiveEntry(entry));
+      dispatch(updateDiveEntry({ ...entry, userId: currentUser.id }));
     } else {
-      dispatch(addDiveEntry(entry));
+      dispatch(addDiveEntry({ ...entry, userId: currentUser.id }));
     }
 
     navigate('/entries');

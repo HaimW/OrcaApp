@@ -8,10 +8,11 @@ const initialState: AppState = {
   error: undefined,
 };
 
-// Load from localStorage on initialization
-const loadFromStorage = (): DiveEntry[] => {
+// Load from localStorage for specific user
+const loadFromStorage = (userId?: string): DiveEntry[] => {
   try {
-    const stored = localStorage.getItem('orca-dive-entries');
+    if (!userId) return [];
+    const stored = localStorage.getItem(`orca-dive-entries-${userId}`);
     return stored ? JSON.parse(stored) : [];
   } catch (error) {
     console.error('Error loading from localStorage:', error);
@@ -19,10 +20,11 @@ const loadFromStorage = (): DiveEntry[] => {
   }
 };
 
-// Save to localStorage
-const saveToStorage = (entries: DiveEntry[]) => {
+// Save to localStorage for specific user
+const saveToStorage = (entries: DiveEntry[], userId?: string) => {
   try {
-    localStorage.setItem('orca-dive-entries', JSON.stringify(entries));
+    if (!userId) return;
+    localStorage.setItem(`orca-dive-entries-${userId}`, JSON.stringify(entries));
   } catch (error) {
     console.error('Error saving to localStorage:', error);
   }
@@ -30,27 +32,32 @@ const saveToStorage = (entries: DiveEntry[]) => {
 
 const diveEntriesSlice = createSlice({
   name: 'diveEntries',
-  initialState: {
-    ...initialState,
-    diveEntries: loadFromStorage(),
-  },
+  initialState,
   reducers: {
-    addDiveEntry: (state, action: PayloadAction<DiveEntry>) => {
-      state.diveEntries.unshift(action.payload);
-      saveToStorage(state.diveEntries);
+    loadUserEntries: (state, action: PayloadAction<string>) => {
+      const userId = action.payload;
+      state.diveEntries = loadFromStorage(userId);
+    },
+
+    addDiveEntry: (state, action: PayloadAction<DiveEntry & { userId: string }>) => {
+      const { userId, ...entry } = action.payload;
+      state.diveEntries.unshift(entry);
+      saveToStorage(state.diveEntries, userId);
     },
     
-    updateDiveEntry: (state, action: PayloadAction<DiveEntry>) => {
-      const index = state.diveEntries.findIndex(entry => entry.id === action.payload.id);
+    updateDiveEntry: (state, action: PayloadAction<DiveEntry & { userId: string }>) => {
+      const { userId, ...entry } = action.payload;
+      const index = state.diveEntries.findIndex(e => e.id === entry.id);
       if (index !== -1) {
-        state.diveEntries[index] = action.payload;
-        saveToStorage(state.diveEntries);
+        state.diveEntries[index] = entry;
+        saveToStorage(state.diveEntries, userId);
       }
     },
     
-    deleteDiveEntry: (state, action: PayloadAction<string>) => {
-      state.diveEntries = state.diveEntries.filter(entry => entry.id !== action.payload);
-      saveToStorage(state.diveEntries);
+    deleteDiveEntry: (state, action: PayloadAction<{ entryId: string; userId: string }>) => {
+      const { entryId, userId } = action.payload;
+      state.diveEntries = state.diveEntries.filter(entry => entry.id !== entryId);
+      saveToStorage(state.diveEntries, userId);
     },
     
     setCurrentEntry: (state, action: PayloadAction<DiveEntry | undefined>) => {
@@ -65,19 +72,22 @@ const diveEntriesSlice = createSlice({
       state.error = action.payload;
     },
     
-    clearEntries: (state) => {
+    clearEntries: (state, action: PayloadAction<string>) => {
+      const userId = action.payload;
       state.diveEntries = [];
-      localStorage.removeItem('orca-dive-entries');
+      localStorage.removeItem(`orca-dive-entries-${userId}`);
     },
     
-    importEntries: (state, action: PayloadAction<DiveEntry[]>) => {
-      state.diveEntries = action.payload;
-      saveToStorage(state.diveEntries);
+    importEntries: (state, action: PayloadAction<{ entries: DiveEntry[]; userId: string }>) => {
+      const { entries, userId } = action.payload;
+      state.diveEntries = entries;
+      saveToStorage(state.diveEntries, userId);
     },
   },
 });
 
 export const {
+  loadUserEntries,
   addDiveEntry,
   updateDiveEntry,
   deleteDiveEntry,
