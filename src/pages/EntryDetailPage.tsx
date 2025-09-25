@@ -28,7 +28,7 @@ const EntryDetailPage: React.FC = () => {
   if (!entry) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header title="צלילה לא נמצאה" />
+        <Header title="צלילה לא נמצאה" showBackButton={true} />
         <div className="p-4">
           <Card className="text-center py-12">
             <FaExclamationTriangle className="text-gray-400 mx-auto mb-4" size={48} />
@@ -86,7 +86,7 @@ const EntryDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header title={`צלילה ב${entry.location}`} />
+      <Header title={`צלילה ב${entry.location}`} showBackButton={true} />
       
       <div className="p-4 space-y-4">
         {/* Action Buttons */}
