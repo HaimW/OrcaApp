@@ -11,7 +11,7 @@ interface CatchesSectionProps {
   catches: Catch[];
   fishingType: string;
   onFishingTypeChange: (type: string) => void;
-  onAddCatch: (catch: Catch) => void;
+  onAddCatch: (fishCatch: Catch) => void;
   onRemoveCatch: (catchId: string) => void;
 }
 
