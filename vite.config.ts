@@ -38,7 +38,7 @@ export default defineConfig({
       }
     })
   ],
-  base: './',
+  base: '/OrcaApp/',
   build: {
     outDir: 'dist',
     sourcemap: true
