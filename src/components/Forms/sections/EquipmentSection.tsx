@@ -102,7 +102,7 @@ const EquipmentSection: React.FC<EquipmentSectionProps> = ({
 
         {/* Weight */}
         <Input
-          label="משקל (ק\"ג)"
+          label="משקל (ק&quot;ג)"
           type="number"
           min="0"
           step="0.5"

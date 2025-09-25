@@ -97,7 +97,7 @@ const WeatherSection: React.FC<WeatherSectionProps> = ({
         {/* Wind */}
         <div className="grid grid-cols-2 gap-4">
           <Input
-            label="מהירות רוח (קמ\"ש)"
+            label="מהירות רוח (קמ/ש)"
             type="number"
             min="0"
             value={data.windSpeed || ''}
