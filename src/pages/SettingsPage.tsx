@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fa';
 import { DiveEntry } from '../types';
 import { addSampleData } from '../utils/sampleData';
+import { resetAllData, createDefaultAdmin } from '../utils/resetData';
 
 const SettingsPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -264,6 +265,62 @@ const SettingsPage: React.FC = () => {
           </div>
         </Card>
 
+        {/* Developer Tools - Only for Admin */}
+        {currentUser?.role === 'admin' && (
+          <Card>
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <FaHeart className="text-red-500" />
+              כלי מפתח (אדמין בלבד)
+            </h3>
+            
+            <div className="space-y-3">
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <h4 className="font-medium text-yellow-800 mb-2">איפוס מערכת מלא</h4>
+                <p className="text-sm text-yellow-600 mb-3">
+                  מחיקה מלאה של כל הנתונים במערכת (משתמשים + צלילות)
+                </p>
+                <Button 
+                  variant="danger" 
+                  onClick={() => {
+                    if (confirm('האם אתם בטוחים? פעולה זו תמחק את כל הנתונים!')) {
+                      resetAllData();
+                    }
+                  }}
+                >
+                  איפוס מלא של המערכת
+                </Button>
+              </div>
+
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-medium text-blue-800 mb-2">יצירת אדמין ברירת מחדל</h4>
+                <p className="text-sm text-blue-600 mb-3">
+                  יצירת משתמש אדמין עם שם משתמש 'admin' (יעבוד עם כל סיסמה)
+                </p>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => {
+                    if (confirm('יצירת משתמש אדמין חדש?')) {
+                      createDefaultAdmin();
+                    }
+                  }}
+                >
+                  צור אדמין ברירת מחדל
+                </Button>
+              </div>
+
+              <div className="mt-4 p-3 bg-gray-100 rounded-lg">
+                <h5 className="font-medium text-gray-700 mb-2">📝 הוראות גישה לאדמין:</h5>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• הירשמו עם שם משתמש <strong>"admin"</strong></li>
+                  <li>• הכניסו כל סיסמה (לפחות 6 תווים)</li>
+                  <li>• תקבלו הרשאות אדמין אוטומטית</li>
+                  <li>• תראו כפתור "ניהול" בניווט התחתון</li>
+                </ul>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* PWA Info */}
         <Card>
           <h3 className="text-lg font-semibold mb-4">Progressive Web App</h3>
@@ -314,6 +371,30 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
         </Card>
+
+        {/* Admin Access Info for non-admin users */}
+        {(!currentUser || currentUser.role !== 'admin') && (
+          <Card>
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <FaUser className="text-orange-500" />
+              איך להפוך למנהל מערכת?
+            </h3>
+            
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <h4 className="font-medium text-orange-800 mb-3">🔐 הרשאות מנהל</h4>
+              <div className="space-y-2 text-sm text-orange-700">
+                <p><strong>שלב 1:</strong> התנתקו מהחשבון הנוכחי</p>
+                <p><strong>שלב 2:</strong> הירשמו מחדש עם שם משתמש <code className="bg-orange-100 px-1 rounded">admin</code></p>
+                <p><strong>שלב 3:</strong> הכניסו כל סיסמה שתרצו (לפחות 6 תווים)</p>
+                <p><strong>שלב 4:</strong> תקבלו הרשאות מנהל אוטומטית!</p>
+              </div>
+              
+              <div className="mt-3 p-2 bg-orange-100 rounded text-xs text-orange-600">
+                💡 <strong>טיפ:</strong> אם שם המשתמש "admin" תפוס, נקו את הנתונים קודם או השתמשו במשתמש הקיים
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Usage Tips */}
         <Card>
