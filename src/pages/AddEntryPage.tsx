@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../hooks';
 import { addDiveEntry, updateDiveEntry } from '../store/slices/diveEntriesSlice';
 import Header from '../components/Layout/Header';
 import DiveEntryForm from '../components/Forms/DiveEntryForm';
+import WhatsAppShare from '../components/Social/WhatsAppShare';
 import { DiveEntry } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,6 +14,8 @@ const AddEntryPage: React.FC = () => {
   const { id } = useParams();
   const { diveEntries } = useAppSelector((state) => state.diveEntries);
   const { currentUser } = useAppSelector((state) => state.auth);
+  const [showWhatsAppShare, setShowWhatsAppShare] = useState(false);
+  const [savedEntry, setSavedEntry] = useState<DiveEntry | null>(null);
   
   const isEditing = Boolean(id);
   const existingEntry = isEditing ? diveEntries.find(entry => entry.id === id) : undefined;
@@ -73,6 +76,25 @@ const AddEntryPage: React.FC = () => {
     navigate('/entries');
   };
 
+  const handleSaveAndShare = (data: Partial<DiveEntry>) => {
+    if (!currentUser) return;
+
+    const entry: DiveEntry = {
+      id: uuidv4(),
+      userId: currentUser.id,
+      ...data as DiveEntry,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Save the entry first
+    dispatch(addDiveEntry({ ...entry, userId: currentUser.id }));
+    
+    // Store entry for sharing and show WhatsApp modal
+    setSavedEntry(entry);
+    setShowWhatsAppShare(true);
+  };
+
   const handleCancel = () => {
     navigate(-1);
   };
@@ -89,8 +111,22 @@ const AddEntryPage: React.FC = () => {
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isEditing={isEditing}
+          onSaveAndShare={handleSaveAndShare}
         />
       </div>
+
+      {/* WhatsApp Share Modal */}
+      {showWhatsAppShare && savedEntry && (
+        <WhatsAppShare
+          entry={savedEntry}
+          isOpen={showWhatsAppShare}
+          onClose={() => {
+            setShowWhatsAppShare(false);
+            setSavedEntry(null);
+            navigate('/entries');
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -14,7 +14,12 @@ import {
   FaFileExport,
   FaFileImport,
   FaSignOutAlt,
-  FaUser
+  FaUser,
+  FaWhatsapp,
+  FaUsers,
+  FaShieldAlt,
+  FaUserShield,
+  FaCog
 } from 'react-icons/fa';
 import { DiveEntry } from '../types';
 import { addSampleData } from '../utils/sampleData';
@@ -27,6 +32,9 @@ const SettingsPage: React.FC = () => {
   const { currentUser } = useAppSelector((state) => state.auth);
   const [showClearModal, setShowClearModal] = useState(false);
   const [importError, setImportError] = useState<string>('');
+  const [communityGroupLink, setCommunityGroupLink] = useState(
+    localStorage.getItem('orca-community-whatsapp') || ''
+  );
 
   const handleExportData = () => {
     const dataStr = JSON.stringify(diveEntries, null, 2);
@@ -105,6 +113,11 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleSaveCommunitySettings = () => {
+    localStorage.setItem('orca-community-whatsapp', communityGroupLink);
+    alert('הגדרות הקהילה נשמרו בהצלחה!');
+  };
+
   const appVersion = '1.0.0';
   const buildDate = new Date().toLocaleDateString('he-IL');
 
@@ -158,6 +171,64 @@ const SettingsPage: React.FC = () => {
               <FaSignOutAlt size={16} />
               התנתק מהמערכת
             </Button>
+          </div>
+        </Card>
+
+        {/* Community Settings */}
+        <Card>
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <FaUsers className="text-green-500" />
+            הגדרות קהילה
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+              <FaWhatsapp className="text-green-500 text-xl mt-1" />
+              <div className="flex-1">
+                <h4 className="font-medium text-gray-800 mb-1">קבוצת WhatsApp של קהילת אורקה</h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  הגדירו קישור לקבוצת WhatsApp של הקהילה. הקישור ישמש לשיתוף מהיר של יומני צלילה.
+                </p>
+                
+                <div className="space-y-3">
+                  <input
+                    type="url"
+                    value={communityGroupLink}
+                    onChange={(e) => setCommunityGroupLink(e.target.value)}
+                    placeholder="https://chat.whatsapp.com/..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    dir="ltr"
+                  />
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="secondary"
+                      onClick={handleSaveCommunitySettings}
+                      className="bg-green-500 hover:bg-green-600 text-white border-green-500"
+                    >
+                      <FaCog size={14} />
+                      שמירת הגדרות
+                    </Button>
+                    
+                    {communityGroupLink && (
+                      <Button
+                        variant="secondary"
+                        onClick={() => window.open(communityGroupLink, '_blank')}
+                        className="text-green-600 border-green-300 hover:bg-green-50"
+                      >
+                        <FaWhatsapp size={14} />
+                        פתיחת קבוצה
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-xs text-gray-500 space-y-1">
+              <p>💡 <strong>טיפ:</strong> הקישור לקבוצה זמין לכל המשתמשים באפליקציה</p>
+              <p>🔗 ניתן לקבל את הקישור מתפריט הקבוצה ב-WhatsApp ← "מידע קבוצה" ← "הזמן באמצעות קישור"</p>
+            </div>
           </div>
         </Card>
 

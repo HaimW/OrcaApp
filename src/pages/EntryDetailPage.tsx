@@ -7,11 +7,13 @@ import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
 import EntryDetails from '../components/Entries/EntryDetails';
 import DeleteConfirmModal from '../components/UI/DeleteConfirmModal';
+import WhatsAppShare from '../components/Social/WhatsAppShare';
 import { 
   FaEdit, 
   FaTrash, 
   FaArrowLeft, 
   FaShare,
+  FaWhatsapp,
   FaExclamationTriangle 
 } from 'react-icons/fa';
 
@@ -22,6 +24,7 @@ const EntryDetailPage: React.FC = () => {
   const { diveEntries } = useAppSelector((state) => state.diveEntries);
   const { currentUser } = useAppSelector((state) => state.auth);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showWhatsAppShare, setShowWhatsAppShare] = useState(false);
 
   const entry = diveEntries.find(e => e.id === id);
 
@@ -91,30 +94,41 @@ const EntryDetailPage: React.FC = () => {
       <div className="p-4 space-y-4">
         {/* Action Buttons */}
         <Card padding="sm">
-          <div className="flex gap-3">
-            <Button
-              variant="primary"
-              onClick={handleEdit}
-              className="flex-1"
-            >
-              <FaEdit size={16} />
-              עריכה
-            </Button>
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <Button
+                variant="primary"
+                onClick={handleEdit}
+                className="flex-1"
+              >
+                <FaEdit size={16} />
+                עריכה
+              </Button>
+              
+              <Button
+                variant="secondary"
+                onClick={handleShare}
+                className="px-4"
+              >
+                <FaShare size={16} />
+              </Button>
+              
+              <Button
+                variant="danger"
+                onClick={() => setShowDeleteModal(true)}
+                className="px-4"
+              >
+                <FaTrash size={16} />
+              </Button>
+            </div>
             
+            {/* WhatsApp Share Button */}
             <Button
-              variant="secondary"
-              onClick={handleShare}
-              className="px-4"
+              onClick={() => setShowWhatsAppShare(true)}
+              className="w-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2"
             >
-              <FaShare size={16} />
-            </Button>
-            
-            <Button
-              variant="danger"
-              onClick={() => setShowDeleteModal(true)}
-              className="px-4"
-            >
-              <FaTrash size={16} />
+              <FaWhatsapp size={16} />
+              שיתוף לקהילת אורקה בWhatsApp
             </Button>
           </div>
         </Card>
@@ -130,6 +144,15 @@ const EntryDetailPage: React.FC = () => {
           message={`האם אתם בטוחים שברצונכם למחוק את הצלילה ב${entry.location}? פעולה זו לא ניתנת לביטול.`}
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteModal(false)}
+        />
+      )}
+
+      {/* WhatsApp Share Modal */}
+      {showWhatsAppShare && (
+        <WhatsAppShare
+          entry={entry}
+          isOpen={showWhatsAppShare}
+          onClose={() => setShowWhatsAppShare(false)}
         />
       )}
     </div>

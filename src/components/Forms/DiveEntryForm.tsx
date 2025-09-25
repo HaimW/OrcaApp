@@ -9,13 +9,14 @@ import EquipmentSection from './sections/EquipmentSection';
 import CatchesSection from './sections/CatchesSection';
 import PhotosSection from './sections/PhotosSection';
 import NotesSection from './sections/NotesSection';
-import { FaSave, FaTimes } from 'react-icons/fa';
+import { FaSave, FaTimes, FaWhatsapp } from 'react-icons/fa';
 
 interface DiveEntryFormProps {
   initialData: Partial<DiveEntry>;
   onSubmit: (data: Partial<DiveEntry>) => void;
   onCancel: () => void;
   isEditing?: boolean;
+  onSaveAndShare?: (data: Partial<DiveEntry>) => void;
 }
 
 const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
@@ -23,6 +24,7 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
   onSubmit,
   onCancel,
   isEditing = false,
+  onSaveAndShare
 }) => {
   const [formData, setFormData] = useState<Partial<DiveEntry>>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -154,25 +156,39 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
 
       {/* Action Buttons */}
       <Card>
-        <div className="flex gap-3">
-          <Button
-            type="submit"
-            variant="primary"
-            fullWidth
-            className="h-12"
-          >
-            <FaSave size={20} />
-            {isEditing ? 'עדכון צלילה' : 'שמירת צלילה'}
-          </Button>
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              className="h-12"
+            >
+              <FaSave size={20} />
+              {isEditing ? 'עדכון צלילה' : 'שמירת צלילה'}
+            </Button>
+            
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onCancel}
+              className="h-12 px-6"
+            >
+              <FaTimes size={20} />
+            </Button>
+          </div>
           
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onCancel}
-            className="h-12 px-6"
-          >
-            <FaTimes size={20} />
-          </Button>
+          {/* WhatsApp Share Button - only for new entries */}
+          {!isEditing && onSaveAndShare && (
+            <Button
+              type="button"
+              onClick={() => onSaveAndShare(formData)}
+              className="w-full h-12 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2"
+            >
+              <FaWhatsapp size={20} />
+              שמירה ושיתוף לקהילת אורקה
+            </Button>
+          )}
         </div>
       </Card>
     </form>
