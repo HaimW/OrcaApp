@@ -4,6 +4,7 @@ import Card from '../UI/Card';
 import Button from '../UI/Button';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import { FaUsers, FaTrash, FaBan, FaCheck, FaCrown } from 'react-icons/fa';
+import { isUserAdmin } from '../../utils/adminConfig';
 
 interface User {
   uid: string;
@@ -21,7 +22,7 @@ const AdminPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Check if current user is admin
-  const isAdmin = user?.email === 'admin@orca.com' || user?.email?.includes('admin');
+  const isAdmin = isUserAdmin(user?.email);
 
   useEffect(() => {
     if (isAdmin) {
