@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './index';
 import { 
   signInAnonymouslyAsync,
+  signUpWithEmailAsync,
+  signInWithEmailAsync,
   signInWithGoogleAsync,
   signOutAsync,
   setUser,
@@ -15,14 +17,20 @@ export const useAuth = () => {
 
   // Listen to auth state changes
   useEffect(() => {
-    dispatch(setAuthLoading(true));
-    
     const unsubscribe = AuthService.onAuthStateChanged((user) => {
       dispatch(setUser(user));
     });
 
     return () => unsubscribe();
   }, [dispatch]);
+
+  const signUpWithEmail = async (email: string, password: string, displayName: string) => {
+    return dispatch(signUpWithEmailAsync({ email, password, displayName }));
+  };
+
+  const signInWithEmail = async (email: string, password: string) => {
+    return dispatch(signInWithEmailAsync({ email, password }));
+  };
 
   const signInAnonymously = async () => {
     return dispatch(signInAnonymouslyAsync());
@@ -50,6 +58,8 @@ export const useAuth = () => {
     error,
     isAuthenticated,
     isAnonymous,
+    signUpWithEmail,
+    signInWithEmail,
     signInAnonymously,
     signInWithGoogle,
     signOut,

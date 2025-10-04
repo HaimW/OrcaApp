@@ -2,17 +2,38 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { User } from 'firebase/auth';
 import { AuthService } from '../../firebase/auth';
 
+// Serializable user data for Redux store
+interface SerializableUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  isAnonymous: boolean;
+}
+
 interface AuthState {
-  user: User | null;
+  user: SerializableUser | null;
   isLoading: boolean;
   error: string | undefined;
   isAuthenticated: boolean;
   isAnonymous: boolean;
 }
 
+// Helper function to convert Firebase User to serializable object
+const userToSerializable = (user: User | null): SerializableUser | null => {
+  if (!user) return null;
+  return {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    isAnonymous: user.isAnonymous,
+  };
+};
+
 const initialState: AuthState = {
   user: null,
-  isLoading: false,
+  isLoading: true, // Start with loading true while checking auth state
   error: undefined,
   isAuthenticated: false,
   isAnonymous: false,
@@ -27,6 +48,30 @@ export const signInAnonymouslyAsync = createAsyncThunk(
       return user;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to sign in anonymously');
+    }
+  }
+);
+
+export const signUpWithEmailAsync = createAsyncThunk(
+  'auth/signUpWithEmail',
+  async ({ email, password, displayName }: { email: string; password: string; displayName: string }, { rejectWithValue }) => {
+    try {
+      const user = await AuthService.signUpWithEmail(email, password, displayName);
+      return user;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to create account');
+    }
+  }
+);
+
+export const signInWithEmailAsync = createAsyncThunk(
+  'auth/signInWithEmail',
+  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      const user = await AuthService.signInWithEmail(email, password);
+      return user;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to sign in');
     }
   }
 );
@@ -60,7 +105,8 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload;
+      console.log('setUser called with:', action.payload ? 'User' : 'null');
+      state.user = userToSerializable(action.payload);
       state.isAuthenticated = !!action.payload;
       state.isAnonymous = action.payload?.isAnonymous || false;
       state.isLoading = false;
@@ -87,11 +133,45 @@ const authSlice = createSlice({
       })
       .addCase(signInAnonymouslyAsync.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = userToSerializable(action.payload);
         state.isAuthenticated = true;
         state.isAnonymous = true;
       })
       .addCase(signInAnonymouslyAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Sign up with email
+    builder
+      .addCase(signUpWithEmailAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(signUpWithEmailAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = userToSerializable(action.payload);
+        state.isAuthenticated = true;
+        state.isAnonymous = false;
+      })
+      .addCase(signUpWithEmailAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Sign in with email
+    builder
+      .addCase(signInWithEmailAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(signInWithEmailAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = userToSerializable(action.payload);
+        state.isAuthenticated = true;
+        state.isAnonymous = false;
+      })
+      .addCase(signInWithEmailAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
@@ -104,7 +184,7 @@ const authSlice = createSlice({
       })
       .addCase(signInWithGoogleAsync.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = userToSerializable(action.payload);
         state.isAuthenticated = true;
         state.isAnonymous = false;
       })
@@ -138,5 +218,7 @@ export const {
   setAuthError,
   clearAuthError,
 } = authSlice.actions;
+
+export type { SerializableUser };
 
 export default authSlice.reducer;

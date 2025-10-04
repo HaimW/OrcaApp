@@ -1,12 +1,12 @@
 import React from 'react';
 import { FaHome, FaList, FaPlus, FaChartBar, FaCog, FaShieldAlt } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
+import { useAuth } from '../../hooks';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser } = useAppSelector(state => state.auth);
+  const { user } = useAuth();
 
   const baseNavItems = [
     { path: '/', icon: FaHome, label: 'בית' },
@@ -17,7 +17,8 @@ const BottomNav: React.FC = () => {
   ];
 
   // Add admin item if user is admin
-  const navItems = currentUser?.role === 'admin' 
+  const isAdmin = user?.email === 'admin@orca.com' || user?.email?.includes('admin');
+  const navItems = isAdmin 
     ? [...baseNavItems, { path: '/admin', icon: FaShieldAlt, label: 'ניהול', isAdmin: true }]
     : baseNavItems;
 

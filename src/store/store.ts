@@ -17,6 +17,9 @@ export const store = configureStore({
     }),
 });
 
+// Add debugging
+console.log('Redux store initialized');
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 

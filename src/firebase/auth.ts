@@ -4,6 +4,9 @@ import {
   GoogleAuthProvider, 
   signOut, 
   onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
   User
 } from 'firebase/auth';
 import { auth } from './config';
@@ -12,11 +15,44 @@ export class AuthService {
   // Sign in anonymously (for users who don't want to create an account)
   static async signInAnonymously(): Promise<User> {
     try {
+      console.log('Attempting anonymous sign in...');
       const result = await signInAnonymously(auth);
       console.log('Signed in anonymously:', result.user.uid);
       return result.user;
     } catch (error) {
       console.error('Error signing in anonymously:', error);
+      throw error;
+    }
+  }
+
+  // Sign up with email and password
+  static async signUpWithEmail(email: string, password: string, displayName: string): Promise<User> {
+    try {
+      console.log('Creating user account...');
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Update user profile
+      await updateProfile(result.user, {
+        displayName: displayName
+      });
+      
+      console.log('User created successfully:', result.user.email);
+      return result.user;
+    } catch (error) {
+      console.error('Error creating user account:', error);
+      throw error;
+    }
+  }
+
+  // Sign in with email and password
+  static async signInWithEmail(email: string, password: string): Promise<User> {
+    try {
+      console.log('Signing in with email...');
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log('Signed in successfully:', result.user.email);
+      return result.user;
+    } catch (error) {
+      console.error('Error signing in with email:', error);
       throw error;
     }
   }
@@ -52,7 +88,11 @@ export class AuthService {
 
   // Listen to auth state changes
   static onAuthStateChanged(callback: (user: User | null) => void): () => void {
-    return onAuthStateChanged(auth, callback);
+    console.log('Setting up auth state listener');
+    return onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
+      callback(user);
+    });
   }
 
   // Check if user is anonymous

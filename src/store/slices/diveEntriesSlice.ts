@@ -27,13 +27,12 @@ export const addDiveEntryAsync = createAsyncThunk(
   'diveEntries/add',
   async (entry: Omit<DiveEntry, 'id'>, { rejectWithValue }) => {
     try {
-      // Add user ID if authenticated
-      const userId = AuthService.getUserId();
-      const entryWithUser = userId ? { ...entry, userId } : entry;
-      
-      const id = await FirebaseService.addDiveEntry(entryWithUser);
-      return { ...entryWithUser, id } as DiveEntry;
+      console.log('Adding dive entry:', entry);
+      const id = await FirebaseService.addDiveEntry(entry);
+      console.log('Dive entry added with ID:', id);
+      return { ...entry, id } as DiveEntry;
     } catch (error: any) {
+      console.error('Error adding dive entry:', error);
       return rejectWithValue(error.message || 'Failed to add dive entry');
     }
   }

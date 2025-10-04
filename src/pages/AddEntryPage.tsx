@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDiveEntries } from '../hooks';
+import { useDiveEntries, useAuth } from '../hooks';
 import Header from '../components/Layout/Header';
 import DiveEntryForm from '../components/Forms/DiveEntryForm';
 import { DiveEntry } from '../types';
@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 const AddEntryPage: React.FC = () => {
   const navigate = useNavigate();
   const { diveEntries, addEntry, updateEntry } = useDiveEntries();
+  const { user } = useAuth();
   const { id } = useParams();
   
   const isEditing = Boolean(id);
@@ -51,23 +52,32 @@ const AddEntryPage: React.FC = () => {
   }, [existingEntry]);
 
   const handleSubmit = async (data: Partial<DiveEntry>) => {
+    console.log('handleSubmit called with:', data);
+    console.log('Current user:', user);
+    
     const entry: DiveEntry = {
       id: isEditing ? id! : uuidv4(),
+      userId: user?.uid || 'anonymous',
       ...data as DiveEntry,
       createdAt: isEditing ? existingEntry!.createdAt : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
+    console.log('Final entry to save:', entry);
+
     try {
       if (isEditing) {
+        console.log('Updating entry...');
         await updateEntry(entry);
       } else {
+        console.log('Adding new entry...');
         await addEntry(entry);
       }
+      console.log('Entry saved successfully!');
       navigate('/entries');
     } catch (error) {
       console.error('Error saving entry:', error);
-      // Could show error message to user here
+      alert('שגיאה בשמירת הצלילה: ' + (error as Error).message);
     }
   };
 

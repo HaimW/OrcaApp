@@ -1,211 +1,223 @@
 import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { registerUser, clearError } from '../../store/slices/authSlice';
-import { Button } from '../UI/Button';
-import { Input } from '../UI/Input';
-import { Card } from '../UI/Card';
-import OrcaImage from '../UI/OrcaImage';
-import { FaUser, FaEnvelope, FaUserTag, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useAuth } from '../../hooks';
+import Card from '../UI/Card';
+import Button from '../UI/Button';
+import Input from '../UI/Input';
+import { FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
-  const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector(state => state.auth);
-  
+const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
+  const { signUpWithEmail, signInWithGoogle, isLoading, error } = useAuth();
   const [formData, setFormData] = useState({
-    username: '',
+    displayName: '',
     email: '',
-    fullName: '',
     password: '',
-    confirmPassword: '',
+    confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.username.trim()) {
-      errors.username = 'שם משתמש נדרש';
-    } else if (formData.username.length < 3) {
-      errors.username = 'שם משתמש חייב להכיל לפחות 3 תווים';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      errors.username = 'שם משתמש יכול להכיל רק אותיות, מספרים וקו תחתון';
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
-
-    if (!formData.email.trim()) {
-      errors.email = 'כתובת אימייל נדרשת';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'כתובת אימייל לא תקינה';
-    }
-
-    if (!formData.fullName.trim()) {
-      errors.fullName = 'שם מלא נדרש';
-    } else if (formData.fullName.trim().length < 2) {
-      errors.fullName = 'שם מלא חייב להכיל לפחות 2 תווים';
-    }
-
-    if (!formData.password) {
-      errors.password = 'סיסמה נדרשת';
-    } else if (formData.password.length < 6) {
-      errors.password = 'סיסמה חייבת להכיל לפחות 6 תווים';
-    }
-
-    if (!formData.confirmPassword) {
-      errors.confirmPassword = 'אישור סיסמה נדרש';
-    } else if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'הסיסמאות לא תואמות';
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.displayName.trim()) {
+      newErrors.displayName = 'שם מלא נדרש';
+    } else if (formData.displayName.trim().length < 2) {
+      newErrors.displayName = 'שם חייב להכיל לפחות 2 תווים';
+    }
+    
+    if (!formData.email) {
+      newErrors.email = 'אימייל נדרש';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'אימייל לא תקין';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'סיסמה נדרשת';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'סיסמה חייבת להכיל לפחות 6 תווים';
+    }
+    
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'אישור סיסמה נדרש';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'סיסמאות לא תואמות';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      return;
+    if (validateForm()) {
+      try {
+        await signUpWithEmail(formData.email, formData.password, formData.displayName.trim());
+      } catch (error) {
+        console.error('Registration error:', error);
+      }
     }
-
-    dispatch(registerUser(formData));
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear validation error for this field
-    if (validationErrors[field]) {
-      setValidationErrors(prev => ({ ...prev, [field]: '' }));
-    }
-    
-    // Clear server error
-    if (error) {
-      dispatch(clearError());
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Google sign in error:', error);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-6">
-        <div className="text-center mb-6">
-          <OrcaImage 
-            size="xl" 
-            shape="circle" 
-            className="mx-auto mb-4"
-            specificImage="orca-jumping"
-            showCredits={false}
+    <Card className="w-full max-w-md">
+      <div className="text-center mb-6">
+        <div className="gradient-ocean rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center text-4xl">
+          🐋
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          הרשמה לאורקה
+        </h2>
+        <p className="text-gray-600">
+          צור חשבון חדש
+        </p>
+      </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-700 text-sm">{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Input
+            type="text"
+            placeholder="שם מלא"
+            value={formData.displayName}
+            onChange={(e) => handleChange('displayName', e.target.value)}
+            className={errors.displayName ? 'border-red-500' : ''}
           />
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            הצטרפו לאורקה
-          </h1>
-          <p className="text-gray-600">
-            צרו חשבון חדש ותתחילו לנהל את יומן הצלילה שלכם
-          </p>
+          {errors.displayName && (
+            <p className="text-red-500 text-xs mt-1">{errors.displayName}</p>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
+        <div>
           <Input
-            label="שם משתמש"
-            type="text"
-            value={formData.username}
-            onChange={(e) => handleInputChange('username', e.target.value)}
-            icon={<FaUserTag />}
-            placeholder="בחרו שם משתמש ייחודי"
-            error={validationErrors.username}
-            required
-          />
-
-          <Input
-            label="כתובת אימייל"
             type="email"
+            placeholder="כתובת אימייל"
             value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            icon={<FaEnvelope />}
-            placeholder="הכניסו את כתובת האימייל שלכם"
-            error={validationErrors.email}
-            required
+            onChange={(e) => handleChange('email', e.target.value)}
+            className={errors.email ? 'border-red-500' : ''}
           />
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+          )}
+        </div>
 
-          <Input
-            label="שם מלא"
-            type="text"
-            value={formData.fullName}
-            onChange={(e) => handleInputChange('fullName', e.target.value)}
-            icon={<FaUser />}
-            placeholder="הכניסו את שמכם המלא"
-            error={validationErrors.fullName}
-            required
-          />
-
+        <div>
           <div className="relative">
             <Input
-              label="סיסמה"
               type={showPassword ? 'text' : 'password'}
+              placeholder="סיסמה"
               value={formData.password}
-              onChange={(e) => handleInputChange('password', e.target.value)}
-              icon={<FaLock />}
-              placeholder="בחרו סיסמה חזקה"
-              error={validationErrors.password}
-              required
+              onChange={(e) => handleChange('password', e.target.value)}
+              className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute left-3 top-[38px] text-gray-400 hover:text-gray-600"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
             </button>
           </div>
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+          )}
+        </div>
 
-          <Input
-            label="אישור סיסמה"
-            type={showPassword ? 'text' : 'password'}
-            value={formData.confirmPassword}
-            onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-            icon={<FaLock />}
-            placeholder="הכניסו שוב את הסיסמה"
-            error={validationErrors.confirmPassword}
-            required
-          />
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? 'נרשם...' : 'הרשמה לאורקה'}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            יש לכם כבר חשבון?{' '}
+        <div>
+          <div className="relative">
+            <Input
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="אישור סיסמה"
+              value={formData.confirmPassword}
+              onChange={(e) => handleChange('confirmPassword', e.target.value)}
+              className={errors.confirmPassword ? 'border-red-500 pr-10' : 'pr-10'}
+            />
             <button
-              onClick={onSwitchToLogin}
-              className="text-blue-500 hover:text-blue-600 font-medium"
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              היכנסו כאן
+              {showConfirmPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
             </button>
-          </p>
+          </div>
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+          )}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center">
-            🔒 הנתונים שלכם נשמרים באופן מקומי במכשיר שלכם<br/>
-            📱 האפליקציה עובדת גם ללא חיבור לאינטרנט
-          </p>
+        <Button
+          type="submit"
+          variant="primary"
+          fullWidth
+          disabled={isLoading}
+          className="h-12"
+        >
+          {isLoading ? 'יוצר חשבון...' : 'הירשם'}
+        </Button>
+      </form>
+
+      <div className="mt-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">או</span>
+          </div>
         </div>
-      </Card>
-    </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          fullWidth
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+          className="mt-4 h-12"
+        >
+          <FaGoogle size={20} />
+          הירשם עם Google
+        </Button>
+      </div>
+
+      <div className="mt-6 text-center">
+        <p className="text-sm text-gray-600">
+          יש לך כבר חשבון?{' '}
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="text-ocean-600 hover:text-ocean-700 font-medium"
+          >
+            התחבר כאן
+          </button>
+        </p>
+      </div>
+    </Card>
   );
 };
+
+export default RegisterForm;

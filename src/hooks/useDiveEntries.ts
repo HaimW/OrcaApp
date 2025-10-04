@@ -13,6 +13,7 @@ import {
   removeDiveEntryRealtime,
 } from '../store/slices/diveEntriesSlice';
 import { FirebaseService } from '../firebase/firestore';
+import { LocalStorageService } from '../services/localStorage';
 import { AuthService } from '../firebase/auth';
 import { DiveEntry } from '../types';
 
@@ -34,27 +35,73 @@ export const useDiveEntries = () => {
 
     let unsubscribe: (() => void) | undefined;
 
-    if (user?.isAnonymous) {
-      // For anonymous users, listen to all entries
-      unsubscribe = FirebaseService.subscribeToAllDiveEntries((entries) => {
-        dispatch(setDiveEntries(entries));
-      });
-    } else if (user?.uid) {
-      // For authenticated users, listen to their entries only
-      unsubscribe = FirebaseService.subscribeToUserDiveEntries(user.uid, (entries) => {
-        dispatch(setDiveEntries(entries));
-      });
+    try {
+      console.log('Setting up Firebase listener for user:', user?.uid);
+      
+      if (user?.isAnonymous) {
+        // For anonymous users, listen to all entries
+        unsubscribe = FirebaseService.subscribeToAllDiveEntries((entries) => {
+          console.log('Firebase listener received entries:', entries.length);
+          dispatch(setDiveEntries(entries));
+        });
+      } else if (user?.uid) {
+        // For authenticated users, listen to their entries only
+        unsubscribe = FirebaseService.subscribeToUserDiveEntries(user.uid, (entries) => {
+          console.log('Firebase listener received entries:', entries.length);
+          dispatch(setDiveEntries(entries));
+        });
+      }
+    } catch (error) {
+      console.error('Firebase listener failed:', error);
+      // Fallback to localStorage
+      const entries = LocalStorageService.getDiveEntries();
+      dispatch(setDiveEntries(entries));
     }
 
     return () => {
       if (unsubscribe) {
+        console.log('Cleaning up Firebase listener');
         unsubscribe();
       }
     };
   }, [dispatch, isAuthenticated, user?.uid, user?.isAnonymous]);
 
   const addEntry = async (entry: Omit<DiveEntry, 'id'>) => {
-    return dispatch(addDiveEntryAsync(entry));
+    try {
+      // Add userId to entry
+      const entryWithUser = {
+        ...entry,
+        userId: user?.uid || 'anonymous'
+      };
+      
+      console.log('Attempting to add entry to Firebase:', entryWithUser);
+      
+      // Try Firebase first
+      const result = await dispatch(addDiveEntryAsync(entryWithUser));
+      
+      console.log('Firebase result:', result.type);
+      
+      // If Firebase fails, use localStorage as fallback
+      if (result.type.endsWith('/rejected')) {
+        console.log('Firebase failed, using localStorage fallback');
+        const newEntry: DiveEntry = {
+          ...entryWithUser,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        LocalStorageService.addDiveEntry(newEntry);
+        dispatch(addDiveEntryRealtime(newEntry));
+        console.log('Entry added successfully to localStorage');
+      } else {
+        console.log('Entry added successfully to Firebase');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error adding entry:', error);
+      throw error;
+    }
   };
 
   const updateEntry = async (entry: DiveEntry) => {

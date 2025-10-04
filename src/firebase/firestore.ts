@@ -12,7 +12,7 @@ import {
   serverTimestamp,
   Timestamp
 } from 'firebase/firestore';
-import { db } from './config';
+import { db, auth } from './config';
 import { DiveEntry } from '../types';
 
 const COLLECTION_NAME = 'diveEntries';
@@ -30,44 +30,88 @@ export class FirebaseService {
   // Add a new dive entry
   static async addDiveEntry(entry: Omit<DiveEntry, 'id'>): Promise<string> {
     try {
+      console.log('FirebaseService.addDiveEntry called with:', entry);
+      
+      // Check if user is authenticated
+      const currentUser = auth.currentUser;
+      console.log('Current user:', currentUser ? 'authenticated' : 'not authenticated');
+      console.log('User UID:', currentUser?.uid);
+      
+      if (!currentUser) {
+        throw new Error('User not authenticated');
+      }
+      
       const docData = {
         ...entry,
+        userId: currentUser.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
       
+      console.log('Document data to save:', docData);
+      console.log('Collection name:', COLLECTION_NAME);
+      
       const docRef = await addDoc(collection(db, COLLECTION_NAME), docData);
       console.log('Dive entry added with ID: ', docRef.id);
       return docRef.id;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding dive entry: ', error);
-      throw error;
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      // Provide more specific error messages
+      if (error.code === 'permission-denied') {
+        throw new Error('אין הרשאה לשמור צלילה. אנא בדוק את Firebase Rules.');
+      } else if (error.code === 'unavailable') {
+        throw new Error('שירות Firebase לא זמין. אנא נסה שוב מאוחר יותר.');
+      } else if (error.code === 'unauthenticated') {
+        throw new Error('משתמש לא מחובר. אנא התחבר מחדש.');
+      } else if (error.message) {
+        throw new Error(error.message);
+      } else {
+        throw new Error('שגיאה לא ידועה בשמירת הצלילה');
+      }
     }
   }
 
   // Get all dive entries
   static async getAllDiveEntries(): Promise<DiveEntry[]> {
     try {
-      const q = query(
-        collection(db, COLLECTION_NAME), 
-        orderBy('date', 'desc'),
-        orderBy('createdAt', 'desc')
-      );
+      console.log('FirebaseService.getAllDiveEntries called');
+      console.log('Current user:', auth.currentUser ? 'authenticated' : 'not authenticated');
+      console.log('User UID:', auth.currentUser?.uid);
       
+      // Try simple query first without orderBy to avoid index issues
+      const q = collection(db, COLLECTION_NAME);
+      
+      console.log('Executing query...');
       const querySnapshot = await getDocs(q);
+      console.log('Query snapshot size:', querySnapshot.size);
+      
       const entries: DiveEntry[] = [];
       
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        console.log('Document data:', doc.id, data);
+        
+        // Skip documents that don't have required dive entry fields
+        if (!data.date || !data.location) {
+          console.warn('Skipping invalid document:', doc.id);
+          return;
+        }
+        
         entries.push(convertTimestamps({
           id: doc.id,
           ...data,
         }));
       });
       
+      console.log('Returning entries:', entries.length);
       return entries;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting dive entries: ', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
       throw error;
     }
   }
@@ -130,16 +174,23 @@ export class FirebaseService {
 
   // Real-time listener for dive entries
   static subscribeToAllDiveEntries(callback: (entries: DiveEntry[]) => void): () => void {
-    const q = query(
-      collection(db, COLLECTION_NAME), 
-      orderBy('date', 'desc'),
-      orderBy('createdAt', 'desc')
-    );
+    console.log('Setting up real-time listener for all entries');
+    
+    // Use simple collection reference to avoid index issues
+    const q = collection(db, COLLECTION_NAME);
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      console.log('Real-time listener received snapshot:', querySnapshot.size, 'entries');
       const entries: DiveEntry[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        
+        // Skip documents that don't have required dive entry fields
+        if (!data.date || !data.location) {
+          console.warn('Skipping invalid document:', doc.id);
+          return;
+        }
+        
         entries.push(convertTimestamps({
           id: doc.id,
           ...data,
@@ -148,6 +199,8 @@ export class FirebaseService {
       callback(entries);
     }, (error) => {
       console.error('Error in real-time listener: ', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
     });
     
     return unsubscribe;
@@ -155,17 +208,26 @@ export class FirebaseService {
 
   // Real-time listener for user's dive entries
   static subscribeToUserDiveEntries(userId: string, callback: (entries: DiveEntry[]) => void): () => void {
+    console.log('Setting up real-time listener for user:', userId);
+    
+    // Use simple where query without orderBy to avoid index issues
     const q = query(
       collection(db, COLLECTION_NAME),
-      where('userId', '==', userId),
-      orderBy('date', 'desc'),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId)
     );
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      console.log('Real-time listener received snapshot:', querySnapshot.size, 'entries');
       const entries: DiveEntry[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        
+        // Skip documents that don't have required dive entry fields
+        if (!data.date || !data.location) {
+          console.warn('Skipping invalid document:', doc.id);
+          return;
+        }
+        
         entries.push(convertTimestamps({
           id: doc.id,
           ...data,
@@ -174,6 +236,15 @@ export class FirebaseService {
       callback(entries);
     }, (error) => {
       console.error('Error in user real-time listener: ', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      // Show user-friendly error message
+      if (error.code === 'permission-denied') {
+        alert('שגיאת הרשאות: אנא בדוק את הגדרות Firebase Rules');
+      } else if (error.code === 'unavailable') {
+        alert('שירות Firebase לא זמין. אנא נסה שוב מאוחר יותר.');
+      }
     });
     
     return unsubscribe;
