@@ -20,7 +20,8 @@
     "react-icons": "^4.10.1",
     "uuid": "^9.0.0",
     "workbox-webpack-plugin": "^7.0.0",
-    "workbox-window": "^7.0.0"
+    "workbox-window": "^7.0.0",
+    "firebase": "^10.5.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

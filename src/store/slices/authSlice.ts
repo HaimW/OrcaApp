@@ -1,198 +1,142 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User, AuthState, LoginCredentials, RegisterData, UserPreferences } from '../../types/user';
-import { v4 as uuidv4 } from 'uuid';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { User } from 'firebase/auth';
+import { AuthService } from '../../firebase/auth';
 
-const STORAGE_KEY = 'orca_users';
-const CURRENT_USER_KEY = 'orca_current_user';
-
-// Helper functions for localStorage
-const loadUsersFromStorage = (): User[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveUsersToStorage = (users: User[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-};
-
-const loadCurrentUserFromStorage = (): User | null => {
-  try {
-    const stored = localStorage.getItem(CURRENT_USER_KEY);
-    return stored ? JSON.parse(stored) : null;
-  } catch {
-    return null;
-  }
-};
-
-const saveCurrentUserToStorage = (user: User | null) => {
-  if (user) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(CURRENT_USER_KEY);
-  }
-};
+interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | undefined;
+  isAuthenticated: boolean;
+  isAnonymous: boolean;
+}
 
 const initialState: AuthState = {
-  currentUser: loadCurrentUserFromStorage(),
-  isAuthenticated: !!loadCurrentUserFromStorage(),
-  users: loadUsersFromStorage(),
+  user: null,
   isLoading: false,
-  error: null,
+  error: undefined,
+  isAuthenticated: false,
+  isAnonymous: false,
 };
+
+// Async thunks for authentication
+export const signInAnonymouslyAsync = createAsyncThunk(
+  'auth/signInAnonymously',
+  async (_, { rejectWithValue }) => {
+    try {
+      const user = await AuthService.signInAnonymously();
+      return user;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to sign in anonymously');
+    }
+  }
+);
+
+export const signInWithGoogleAsync = createAsyncThunk(
+  'auth/signInWithGoogle',
+  async (_, { rejectWithValue }) => {
+    try {
+      const user = await AuthService.signInWithGoogle();
+      return user;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to sign in with Google');
+    }
+  }
+);
+
+export const signOutAsync = createAsyncThunk(
+  'auth/signOut',
+  async (_, { rejectWithValue }) => {
+    try {
+      await AuthService.signOut();
+      return null;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to sign out');
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-      state.error = null;
-    },
-
-    setError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
+    setUser: (state, action: PayloadAction<User | null>) => {
+      state.user = action.payload;
+      state.isAuthenticated = !!action.payload;
+      state.isAnonymous = action.payload?.isAnonymous || false;
       state.isLoading = false;
     },
-
-    registerUser: (state, action: PayloadAction<RegisterData>) => {
-      const { username, email, fullName, password } = action.payload;
-      
-      // Check if user already exists
-      const existingUser = state.users.find(
-        user => user.username === username || user.email === email
-      );
-      
-      if (existingUser) {
-        state.error = existingUser.username === username 
-          ? 'שם המשתמש כבר קיים במערכת'
-          : 'כתובת האימייל כבר רשומה במערכת';
-        return;
-      }
-
-      const newUser: User = {
-        id: uuidv4(),
-        username,
-        email,
-        fullName,
-        createdAt: new Date().toISOString(),
-        role: username === 'admin' ? 'admin' : 'user', // Auto-admin for username 'admin'
-        preferences: {
-          language: 'he',
-          units: 'metric',
-          theme: 'light',
-          notifications: {
-            diveReminders: true,
-            weatherAlerts: true,
-            safetyTips: true,
-          },
-        },
-      };
-
-      state.users.push(newUser);
-      state.currentUser = newUser;
-      state.isAuthenticated = true;
-      state.error = null;
-
-      // Save to localStorage
-      saveUsersToStorage(state.users);
-      saveCurrentUserToStorage(newUser);
+    
+    setAuthLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
     },
-
-    loginUser: (state, action: PayloadAction<LoginCredentials>) => {
-      const { username, password } = action.payload;
-      
-      const user = state.users.find(u => u.username === username);
-      
-      if (!user) {
-        state.error = 'שם משתמש או סיסמה שגויים';
-        return;
-      }
-
-      // In a real app, you would verify the password hash
-      // For demo purposes, we'll just check if password is not empty
-      if (!password) {
-        state.error = 'נדרשת סיסמה';
-        return;
-      }
-
-      state.currentUser = user;
-      state.isAuthenticated = true;
-      state.error = null;
-
-      saveCurrentUserToStorage(user);
+    
+    setAuthError: (state, action: PayloadAction<string | undefined>) => {
+      state.error = action.payload;
     },
-
-    logoutUser: (state) => {
-      state.currentUser = null;
-      state.isAuthenticated = false;
-      state.error = null;
-
-      saveCurrentUserToStorage(null);
+    
+    clearAuthError: (state) => {
+      state.error = undefined;
     },
+  },
+  extraReducers: (builder) => {
+    // Sign in anonymously
+    builder
+      .addCase(signInAnonymouslyAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(signInAnonymouslyAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        state.isAnonymous = true;
+      })
+      .addCase(signInAnonymouslyAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
 
-    updateUserProfile: (state, action: PayloadAction<Partial<User>>) => {
-      if (!state.currentUser) return;
+    // Sign in with Google
+    builder
+      .addCase(signInWithGoogleAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(signInWithGoogleAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        state.isAnonymous = false;
+      })
+      .addCase(signInWithGoogleAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
 
-      const updatedUser = { ...state.currentUser, ...action.payload };
-      
-      // Update in users array
-      const userIndex = state.users.findIndex(u => u.id === state.currentUser!.id);
-      if (userIndex !== -1) {
-        state.users[userIndex] = updatedUser;
-      }
-
-      state.currentUser = updatedUser;
-
-      // Save to localStorage
-      saveUsersToStorage(state.users);
-      saveCurrentUserToStorage(updatedUser);
-    },
-
-    updateUserPreferences: (state, action: PayloadAction<Partial<UserPreferences>>) => {
-      if (!state.currentUser) return;
-
-      const updatedPreferences = {
-        ...state.currentUser.preferences,
-        ...action.payload,
-      };
-
-      const updatedUser = {
-        ...state.currentUser,
-        preferences: updatedPreferences,
-      };
-
-      // Update in users array
-      const userIndex = state.users.findIndex(u => u.id === state.currentUser!.id);
-      if (userIndex !== -1) {
-        state.users[userIndex] = updatedUser;
-      }
-
-      state.currentUser = updatedUser;
-
-      // Save to localStorage
-      saveUsersToStorage(state.users);
-      saveCurrentUserToStorage(updatedUser);
-    },
-
-    clearError: (state) => {
-      state.error = null;
-    },
+    // Sign out
+    builder
+      .addCase(signOutAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(signOutAsync.fulfilled, (state) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.isAnonymous = false;
+      })
+      .addCase(signOutAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
 export const {
-  setLoading,
-  setError,
-  registerUser,
-  loginUser,
-  logoutUser,
-  updateUserProfile,
-  updateUserPreferences,
-  clearError,
+  setUser,
+  setAuthLoading,
+  setAuthError,
+  clearAuthError,
 } = authSlice.actions;
 
 export default authSlice.reducer;

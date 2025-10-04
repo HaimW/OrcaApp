@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../hooks';
+import { useDiveEntries } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
+import LoadingSpinner from '../components/UI/LoadingSpinner';
 import DiveEntryCard from '../components/Entries/DiveEntryCard';
 import FilterBar from '../components/Entries/FilterBar';
 import { FaPlus, FaFilter, FaSearch } from 'react-icons/fa';
@@ -11,7 +12,7 @@ import { FilterOptions } from '../types';
 
 const EntriesPage: React.FC = () => {
   const navigate = useNavigate();
-  const { diveEntries } = useAppSelector((state) => state.diveEntries);
+  const { diveEntries, isLoading } = useDiveEntries();
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
@@ -67,6 +68,21 @@ const EntriesPage: React.FC = () => {
   };
 
   const hasActiveFilters = Object.values(filters).some(value => value !== undefined && value !== '') || searchTerm;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header 
+          title="יומן צלילות" 
+          showAddButton 
+          onAddClick={handleAddNew}
+        />
+        <div className="flex items-center justify-center h-64">
+          <LoadingSpinner size="lg" text="טוען צלילות..." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

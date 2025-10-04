@@ -11,6 +11,8 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],
+        // Ignore Firebase User objects in auth state
+        ignoredPaths: ['auth.user'],
       },
     }),
 });

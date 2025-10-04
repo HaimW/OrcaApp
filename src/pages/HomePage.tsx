@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../hooks';
+import { useDiveEntries, useAuth } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
-import OrcaImage from '../components/UI/OrcaImage';
+import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { 
   FaPlus, 
   FaList, 
@@ -18,7 +18,8 @@ import { he } from 'date-fns/locale';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { diveEntries } = useAppSelector((state) => state.diveEntries);
+  const { diveEntries, isLoading } = useDiveEntries();
+  const { getUserDisplayName, isAnonymous } = useAuth();
   
   const recentEntries = diveEntries.slice(0, 3);
   const totalDives = diveEntries.length;
@@ -28,6 +29,17 @@ const HomePage: React.FC = () => {
   const avgDepth = diveEntries.length > 0 
     ? diveEntries.reduce((sum, entry) => sum + entry.depth, 0) / diveEntries.length 
     : 0;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header title="אורקה - יומן צלילה" />
+        <div className="flex items-center justify-center h-64">
+          <LoadingSpinner size="lg" text="טוען נתונים..." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
