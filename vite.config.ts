@@ -16,8 +16,8 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: '/OrcaApp/',
+        start_url: '/OrcaApp/',
         icons: [
           {
             src: 'pwa-192x192.png',

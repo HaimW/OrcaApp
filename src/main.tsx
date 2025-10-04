@@ -9,7 +9,7 @@ import './index.css'
 // PWA Service Worker registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/OrcaApp/sw.js')
       .then((registration) => {
         console.log('SW registered: ', registration);
       })
@@ -24,7 +24,7 @@ console.log('Starting React app...');
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
+      <BrowserRouter basename="/OrcaApp">
         <App />
       </BrowserRouter>
     </Provider>
