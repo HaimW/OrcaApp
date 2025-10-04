@@ -2,6 +2,7 @@ import React from 'react';
 import { FaHome, FaList, FaPlus, FaChartBar, FaCog, FaShieldAlt } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks';
+import { isUserAdmin } from '../../utils/adminConfig';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
@@ -17,7 +18,7 @@ const BottomNav: React.FC = () => {
   ];
 
   // Add admin item if user is admin
-  const isAdmin = user?.email === 'admin@orca.com' || user?.email?.includes('admin');
+  const isAdmin = isUserAdmin(user?.email);
   const navItems = isAdmin 
     ? [...baseNavItems, { path: '/admin', icon: FaShieldAlt, label: 'ניהול', isAdmin: true }]
     : baseNavItems;
