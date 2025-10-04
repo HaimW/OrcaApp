@@ -5,6 +5,7 @@ import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
+import OrcaImage from '../components/UI/OrcaImage';
 import { 
   FaPlus, 
   FaList, 

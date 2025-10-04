@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDiveEntries } from '../hooks';
+import { useDiveEntries, useAnalytics } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
@@ -13,6 +13,7 @@ import { FilterOptions } from '../types';
 const EntriesPage: React.FC = () => {
   const navigate = useNavigate();
   const { diveEntries, isLoading } = useDiveEntries();
+  const { trackSearch, trackFilter } = useAnalytics();
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
@@ -65,6 +66,29 @@ const EntriesPage: React.FC = () => {
   const clearFilters = () => {
     setFilters({});
     setSearchTerm('');
+  };
+
+  // Track search when search term changes
+  useEffect(() => {
+    if (searchTerm) {
+      const timeoutId = setTimeout(() => {
+        trackSearch(searchTerm, filteredEntries.length);
+      }, 500); // Debounce search tracking
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchTerm, filteredEntries.length, trackSearch]);
+
+  // Track filter usage
+  const handleFiltersChange = (newFilters: FilterOptions) => {
+    setFilters(newFilters);
+    
+    // Track each filter that's being used
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        trackFilter(key, value.toString());
+      }
+    });
   };
 
   const hasActiveFilters = Object.values(filters).some(value => value !== undefined && value !== '') || searchTerm;
@@ -139,7 +163,7 @@ const EntriesPage: React.FC = () => {
         {showFilters && (
           <FilterBar
             filters={filters}
-            onFiltersChange={setFilters}
+            onFiltersChange={handleFiltersChange}
           />
         )}
 
