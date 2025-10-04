@@ -3,15 +3,15 @@ import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 
-// Firebase configuration
-// החלף את הערכים האלה בערכים האמיתיים מ-Firebase Console
+// Firebase configuration - Real config from Firebase Console
 const firebaseConfig = {
-  apiKey: "AIzaSyC7XxXxXxXxXxXxXxXxXxXxXxXxXxX", // החלף עם ה-API Key שלך
-  authDomain: "orca-dive-log.firebaseapp.com", // החלף עם הדומיין שלך
-  projectId: "orca-dive-log", // החלף עם ה-Project ID שלך
-  storageBucket: "orca-dive-log.appspot.com", // החלף עם ה-Storage Bucket שלך
-  messagingSenderId: "123456789012", // החלף עם ה-Sender ID שלך
-  appId: "1:123456789012:web:abcdefghijklmnop123456" // החלף עם ה-App ID שלך
+  apiKey: "AIzaSyA_Km-ls6o_ES1yChEOBQrcqdOMH9_7vPU",
+  authDomain: "orcaapp-54de4.firebaseapp.com",
+  projectId: "orcaapp-54de4",
+  storageBucket: "orcaapp-54de4.firebasestorage.app",
+  messagingSenderId: "223505290661",
+  appId: "1:223505290661:web:4698446b1c612ca74c444c",
+  measurementId: "G-YZ01ES5350"
 };
 
 // Initialize Firebase
