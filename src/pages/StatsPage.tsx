@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { useAppSelector } from '../hooks';
+import { useDiveEntries } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
-import OrcaImage from '../components/UI/OrcaImage';
+import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { 
   FaWater, 
   FaFish, 
@@ -15,10 +15,10 @@ import {
 } from 'react-icons/fa';
 import { format, parseISO } from 'date-fns';
 import { he } from 'date-fns/locale';
-import { FISHING_METHODS, COMMON_FISH_SPECIES } from '../utils/constants';
+import { FISHING_METHODS } from '../utils/constants';
 
 const StatsPage: React.FC = () => {
-  const { diveEntries } = useAppSelector((state) => state.diveEntries);
+  const { diveEntries, isLoading } = useDiveEntries();
 
   const stats = useMemo(() => {
     if (diveEntries.length === 0) {
@@ -109,15 +109,13 @@ const StatsPage: React.FC = () => {
       <Header title="סטטיסטיקות" />
       
       <div className="p-4 space-y-6">
-        {diveEntries.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <LoadingSpinner size="lg" text="טוען סטטיסטיקות..." />
+          </div>
+        ) : diveEntries.length === 0 ? (
           <Card className="text-center py-12">
-            <OrcaImage 
-              size="xl" 
-              shape="circle" 
-              className="mx-auto mb-4"
-              specificImage="orca-family"
-              showCredits={false}
-            />
+            <FaChartBar className="text-gray-400 mx-auto mb-4" size={48} />
             <h3 className="text-lg font-semibold text-gray-600 mb-2">
               אין עדיין נתונים לסטטיסטיקות
             </h3>
