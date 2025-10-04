@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/OrcaApp/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0891b2" />
+    <meta name="description" content="יומן צלילה מקצועי לדייגים - Progressive Web App" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="אורקה" />
+    <link rel="apple-touch-icon" href="/OrcaApp/apple-touch-icon.png" />
+    <link rel="manifest" href="/OrcaApp/manifest.json" />
+    <title>אורקה - יומן צלילה</title>
+    
+    <!-- Single Page App support for GitHub Pages -->
+    <script type="text/javascript">
+      // Check for redirected routes from 404.html
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Heebo', sans-serif;
+        direction: rtl;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+      }
+      
+      /* iOS Safari viewport fix */
+      
+      body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+    </style>
+    <script type="module" crossorigin src="/OrcaApp/assets/index-e7de7ed0.js"></script>
+    <link rel="modulepreload" crossorigin href="/OrcaApp/assets/vendor-b69f2a9f.js">
+    <link rel="modulepreload" crossorigin href="/OrcaApp/assets/redux-06fb5d34.js">
+    <link rel="modulepreload" crossorigin href="/OrcaApp/assets/router-b2921655.js">
+    <link rel="modulepreload" crossorigin href="/OrcaApp/assets/firebase-f03e4b7e.js">
+    <link rel="modulepreload" crossorigin href="/OrcaApp/assets/ui-d7abfbd5.js">
+    <link rel="modulepreload" crossorigin href="/OrcaApp/assets/utils-4a60fe23.js">
+    <link rel="stylesheet" href="/OrcaApp/assets/index-2012bc0a.css">
+  <link rel="manifest" href="/OrcaApp/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/OrcaApp/registerSW.js"></script></head>
+  <body>
+    <div id="root"></div>
+    
+  </body>
+</html>
+
