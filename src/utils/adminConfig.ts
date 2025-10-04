@@ -1,7 +1,7 @@
 // src/utils/adminConfig.ts
 // רשימת מיילים של אדמינים
 export const ADMIN_EMAILS = [
-  'admin@orca.com',
+  'yafim.sh@gmail.com',
   // הוסף כאן מיילים נוספים של אדמינים
   // 'your-email@example.com',
 ];
