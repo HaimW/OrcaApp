@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOffline } from '../../hooks/useOffline';
-import { FaWifi, FaWifi, FaSync } from 'react-icons/fa';
+import { FaWifi, FaExclamationTriangle } from 'react-icons/fa';
 
 const OfflineIndicator: React.FC = () => {
   const { isOnline, isOffline, lastOnline } = useOffline();
@@ -29,7 +29,7 @@ const OfflineIndicator: React.FC = () => {
   return (
     <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 text-sm z-50 shadow-lg">
       <div className="flex items-center justify-center gap-2">
-        <FaWifi size={16} />
+        <FaExclamationTriangle size={16} />
         <span className="font-medium">אין חיבור לאינטרנט</span>
         {lastOnline && (
           <span className="text-orange-100">
