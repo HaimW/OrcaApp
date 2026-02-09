@@ -43,38 +43,38 @@ const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <Header title="אורקה - יומן צלילה" />
       
-      <div className="p-4 space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6 p-4 pb-24">
         {/* Welcome Section */}
-        <div className="text-center py-8">
+        <div className="rounded-3xl border border-slate-200 bg-white px-6 py-10 text-center shadow-sm">
           <OrcaImage 
             size="xl" 
             shape="circle" 
-            className="mx-auto mb-4"
+            className="mx-auto mb-5 ring-4 ring-slate-100"
             showCredits={false}
           />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="mb-2 text-3xl font-bold tracking-tight text-slate-900">
             ברוכים הבאים לאורקה
           </h2>
-          <p className="text-gray-600">
-            יומן הצלילה המקצועי שלכם
+          <p className="text-slate-600">
+            {isAnonymous ? 'מצב אורח פעיל' : `שלום ${getUserDisplayName()}`} · יומן הצלילה המקצועי שלכם
           </p>
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="mt-2 text-xs text-slate-400">
             💡 לחצו על התמונה לתמונה חדשה
           </p>
         </div>
 
         {/* Quick Actions */}
         <Card>
-          <h3 className="text-lg font-semibold mb-4">פעולות מהירות</h3>
+          <h3 className="mb-4 text-lg font-semibold text-slate-900">פעולות מהירות</h3>
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="primary"
               fullWidth
               onClick={() => navigate('/add')}
-              className="h-16"
+              className="h-14 rounded-xl"
             >
               <FaPlus size={20} />
               <span>צלילה חדשה</span>
@@ -83,7 +83,7 @@ const HomePage: React.FC = () => {
               variant="secondary"
               fullWidth
               onClick={() => navigate('/entries')}
-              className="h-16"
+              className="h-14 rounded-xl"
             >
               <FaList size={20} />
               <span>יומן צלילות</span>
@@ -93,30 +93,30 @@ const HomePage: React.FC = () => {
 
         {/* Stats Overview */}
         <Card>
-          <h3 className="text-lg font-semibold mb-4">סטטיסטיקות כלליות</h3>
+          <h3 className="mb-4 text-lg font-semibold text-slate-900">סטטיסטיקות כלליות</h3>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="bg-ocean-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                <FaWater className="text-ocean-600" />
+              <div className="bg-slate-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                <FaWater className="text-slate-700" />
               </div>
-              <div className="text-2xl font-bold text-gray-800">{totalDives}</div>
-              <div className="text-sm text-gray-600">צלילות</div>
+              <div className="text-2xl font-bold text-slate-900">{totalDives}</div>
+              <div className="text-sm text-slate-600">צלילות</div>
             </div>
             
             <div className="text-center">
-              <div className="bg-coral-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                <FaFish className="text-coral-600" />
+              <div className="bg-slate-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                <FaFish className="text-slate-700" />
               </div>
-              <div className="text-2xl font-bold text-gray-800">{totalFish}</div>
-              <div className="text-sm text-gray-600">דגים</div>
+              <div className="text-2xl font-bold text-slate-900">{totalFish}</div>
+              <div className="text-sm text-slate-600">דגים</div>
             </div>
             
             <div className="text-center">
-              <div className="bg-blue-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                <FaClock className="text-blue-600" />
+              <div className="bg-slate-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                <FaClock className="text-slate-700" />
               </div>
-              <div className="text-2xl font-bold text-gray-800">{avgDepth.toFixed(1)}</div>
-              <div className="text-sm text-gray-600">עומק ממוצע</div>
+              <div className="text-2xl font-bold text-slate-900">{avgDepth.toFixed(1)}</div>
+              <div className="text-sm text-slate-600">עומק ממוצע</div>
             </div>
           </div>
         </Card>
@@ -129,7 +129,7 @@ const HomePage: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => navigate('/entries')}
-                className="text-ocean-600"
+                className="text-slate-700"
               >
                 צפייה בכל
               </Button>
@@ -140,21 +140,21 @@ const HomePage: React.FC = () => {
                 <div
                   key={entry.id}
                   onClick={() => navigate(`/entries/${entry.id}`)}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors hover:bg-slate-100 flex items-center justify-between"
                 >
                   <div>
-                    <div className="font-medium text-gray-800">
+                    <div className="font-medium text-slate-900">
                       {entry.location}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-slate-600">
                       {format(new Date(entry.date), 'dd/MM/yyyy', { locale: he })}
                     </div>
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-medium text-ocean-600">
+                    <div className="text-sm font-medium text-slate-700">
                       {entry.depth} מ'
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-slate-500">
                       {entry.catches.length} דגים
                     </div>
                   </div>
@@ -168,10 +168,10 @@ const HomePage: React.FC = () => {
         {totalDives === 0 && (
           <Card className="text-center py-8">
             <FaWater size={48} className="text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">
+            <h3 className="text-lg font-semibold text-slate-600 mb-2">
               עדיין לא יש לכם צלילות
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-slate-500 mb-4">
               התחילו לתעד את חוויות הצלילה שלכם
             </p>
             <Button
@@ -190,7 +190,7 @@ const HomePage: React.FC = () => {
             variant="secondary"
             fullWidth
             onClick={() => navigate('/stats')}
-            className="h-12"
+            className="h-12 rounded-xl"
           >
             <FaChartBar size={20} />
             <span>צפייה בסטטיסטיקות מפורטות</span>

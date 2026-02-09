@@ -19,13 +19,13 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   return (
-    <header className="gradient-ocean text-white shadow-lg sticky top-0 z-50">
-      <div className="flex items-center justify-between px-4 py-3 safe-top">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 text-slate-900 backdrop-blur-md">
+      <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 safe-top">
         <div className="flex items-center gap-3">
           {showBackButton && (
             <button
               onClick={() => navigate(-1)}
-              className="p-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors"
+              className="rounded-lg p-2 transition-colors hover:bg-slate-100 active:bg-slate-200"
               aria-label="חזור"
             >
               <FaArrowLeft size={20} />
@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
           {onMenuClick && (
             <button
               onClick={onMenuClick}
-              className="p-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors"
+              className="rounded-lg p-2 transition-colors hover:bg-slate-100 active:bg-slate-200"
               aria-label="תפריט"
             >
               <FaBars size={20} />
@@ -43,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({
           )}
           
           <div className="flex items-center gap-2">
-            <FaWater size={24} className="text-white" />
+            <FaWater size={20} className="text-cyan-600" />
             <h1 className="text-xl font-bold">{title}</h1>
           </div>
         </div>
@@ -51,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({
         {showAddButton && onAddClick && (
           <button
             onClick={onAddClick}
-            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
+            className="rounded-lg bg-cyan-50 p-2 text-cyan-700 transition-colors hover:bg-cyan-100 active:bg-cyan-200"
             aria-label="הוספת צלילה"
           >
             <FaPlus size={20} />
@@ -63,5 +63,4 @@ const Header: React.FC<HeaderProps> = ({
 };
 
 export default Header;
-
 
