@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { DiveEntry, AppState } from '../../types';
 import { FirebaseService } from '../../firebase/firestore';
 import { AuthService } from '../../firebase/auth';
-import { isUserAdmin } from '../../utils/adminConfig';
 
 const initialState: AppState = {
   diveEntries: [],
@@ -14,15 +13,8 @@ const initialState: AppState = {
 // Async thunks for Firebase operations
 export const fetchDiveEntries = createAsyncThunk(
   'diveEntries/fetchAll',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const state = getState() as { auth?: { user?: { email?: string | null } | null } };
-      const email = state.auth?.user?.email;
-
-      if (isUserAdmin(email)) {
-        return await FirebaseService.getAllDiveEntries();
-      }
-
       const userId = AuthService.getUserId();
       if (!userId) {
         return [] as DiveEntry[];
@@ -80,9 +72,13 @@ export const importDiveEntriesAsync = createAsyncThunk(
   async (entries: DiveEntry[], { rejectWithValue }) => {
     try {
       await FirebaseService.importDiveEntries(entries);
-      // Fetch all entries after import
-      const allEntries = await FirebaseService.getAllDiveEntries();
-      return allEntries;
+      const userId = AuthService.getUserId();
+      if (!userId) {
+        return [] as DiveEntry[];
+      }
+
+      const userEntries = await FirebaseService.getDiveEntriesByUser(userId);
+      return userEntries;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to import dive entries');
     }

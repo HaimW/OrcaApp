@@ -11,7 +11,6 @@ import {
 } from '../store/slices/diveEntriesSlice';
 import { FirebaseService } from '../firebase/firestore';
 import { DiveEntry } from '../types';
-import { isUserAdmin } from '../utils/adminConfig';
 
 export const useDiveEntries = () => {
   const dispatch = useAppDispatch();
@@ -35,11 +34,7 @@ export const useDiveEntries = () => {
       console.log('Setting up Firebase listener for user:', user?.uid);
       
       if (user?.uid) {
-        const subscribeToEntries = isUserAdmin(user.email)
-          ? FirebaseService.subscribeToAllDiveEntries
-          : (callback: (entries: DiveEntry[]) => void) => FirebaseService.subscribeToUserDiveEntries(user.uid, callback);
-
-        unsubscribe = subscribeToEntries((entries) => {
+        unsubscribe = FirebaseService.subscribeToUserDiveEntries(user.uid, (entries) => {
           console.log('Firebase listener received entries:', entries.length);
           dispatch(setDiveEntries(entries));
         });

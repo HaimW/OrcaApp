@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocsFromServer,
   onSnapshot,
   query,
@@ -70,16 +71,24 @@ export class UserProfilesService {
       return;
     }
 
+    const userDocRef = doc(db, USERS_COLLECTION, user.uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+    const isNewUser = !userDocSnapshot.exists();
+
     await setDoc(
-      doc(db, USERS_COLLECTION, user.uid),
+      userDocRef,
       {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName || user.email.split('@')[0],
         createdAt: user.metadata.creationTime || new Date().toISOString(),
-        role: 'user',
-        isActive: true,
         lastLoginAt: serverTimestamp(),
+        ...(isNewUser
+          ? {
+              role: 'user',
+              isActive: true,
+            }
+          : {}),
       },
       { merge: true }
     );
