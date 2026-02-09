@@ -2,6 +2,7 @@ import {
   collection, 
   addDoc, 
   getDocs, 
+  getDocsFromServer,
   doc, 
   updateDoc, 
   deleteDoc, 
@@ -9,8 +10,7 @@ import {
   orderBy, 
   where,
   onSnapshot,
-  serverTimestamp,
-  Timestamp
+  serverTimestamp
 } from 'firebase/firestore';
 import { db, auth } from './config';
 import { DiveEntry } from '../types';
@@ -85,7 +85,7 @@ export class FirebaseService {
       const q = collection(db, COLLECTION_NAME);
       
       console.log('Executing query...');
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocsFromServer(q);
       console.log('Query snapshot size:', querySnapshot.size);
       
       const entries: DiveEntry[] = [];
@@ -154,7 +154,7 @@ export class FirebaseService {
         orderBy('createdAt', 'desc')
       );
       
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocsFromServer(q);
       const entries: DiveEntry[] = [];
       
       querySnapshot.forEach((doc) => {

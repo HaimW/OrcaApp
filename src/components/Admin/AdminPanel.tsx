@@ -1,149 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { useAuth } from '../../hooks';
-import { db } from '../../firebase/config';
+import React, { useEffect, useState } from 'react';
+import { useUserProfile } from '../../hooks';
 import Card from '../UI/Card';
 import Button from '../UI/Button';
 import LoadingSpinner from '../UI/LoadingSpinner';
-import { FaUsers, FaTrash, FaBan, FaCheck, FaCrown } from 'react-icons/fa';
-import { isUserAdmin } from '../../utils/adminConfig';
-
-interface User {
-  uid: string;
-  email: string;
-  displayName: string;
-  createdAt: string;
-  isAdmin: boolean;
-  isActive: boolean;
-}
-
-interface StoredUser {
-  uid: string;
-  email: string;
-  displayName: string;
-  createdAt: string;
-  lastLoginAt?: string;
-}
-
-interface FirestoreUserRecord {
-  uid?: string;
-  email?: string;
-  displayName?: string;
-  createdAt?: { toDate?: () => Date } | string;
-  isActive?: boolean;
-}
-
-const normalizeCreatedAt = (value: FirestoreUserRecord['createdAt']): string => {
-  if (!value) {
-    return new Date().toISOString();
-  }
-
-  if (typeof value === 'string') {
-    return value;
-  }
-
-  return value.toDate?.().toISOString() || new Date().toISOString();
-};
+import { FaTrash, FaBan, FaCheck, FaCrown, FaSyncAlt } from 'react-icons/fa';
+import { UserProfile, UserProfilesService } from '../../firebase/userProfiles';
 
 const AdminPanel: React.FC = () => {
-  const { user } = useAuth();
-  const [users, setUsers] = useState<User[]>([]);
+  const { isAdmin, isProfileLoading, profile } = useUserProfile();
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if current user is admin
-  const isAdmin = isUserAdmin(user?.email);
-
   useEffect(() => {
-    if (isAdmin) {
-      fetchUsers();
+    if (!isAdmin) {
+      return;
     }
+
+    const unsubscribe = UserProfilesService.subscribeToAllProfiles((profiles) => {
+      setUsers(profiles);
+      setIsLoading(false);
+      setError(null);
+    });
+
+    return () => unsubscribe();
   }, [isAdmin]);
 
-  const fetchUsers = async () => {
+  const refreshFromServer = async () => {
     try {
-      setIsLoading(true);
-
-      let fetchedUsers: StoredUser[] = [];
-
-      try {
-        const snapshot = await getDocs(collection(db, 'users'));
-        fetchedUsers = snapshot.docs
-          .map((docSnapshot) => {
-            const data = docSnapshot.data() as FirestoreUserRecord;
-            const email = data.email;
-
-            if (!email) {
-              return null;
-            }
-
-            return {
-              uid: data.uid || docSnapshot.id,
-              email,
-              displayName: data.displayName || email.split('@')[0],
-              createdAt: normalizeCreatedAt(data.createdAt),
-            };
-          })
-          .filter((storedUser): storedUser is StoredUser => storedUser !== null);
-      } catch (firestoreError) {
-        console.warn('Falling back to localStorage users list:', firestoreError);
-      }
-
-      if (fetchedUsers.length === 0) {
-        fetchedUsers = JSON.parse(localStorage.getItem('orca_users') || '[]') as StoredUser[];
-      }
-
-      const normalizedUsers = fetchedUsers.map(storedUser => ({
-        uid: storedUser.uid,
-        email: storedUser.email,
-        displayName: storedUser.displayName,
-        createdAt: storedUser.createdAt,
-        isAdmin: isUserAdmin(storedUser.email),
-        isActive: true,
-      }));
-
-      setUsers(normalizedUsers);
+      setIsRefreshing(true);
+      const serverProfiles = await UserProfilesService.fetchAllProfilesFromServer();
+      setUsers(serverProfiles);
       setError(null);
-    } catch (error) {
-      setError('שגיאה בטעינת רשימת המשתמשים');
-      console.error('Error fetching users:', error);
+    } catch (refreshError) {
+      console.error('Error refreshing users from server:', refreshError);
+      setError('שגיאה ברענון מהענן. נסה שוב.');
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
   };
 
-  const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
+  const handleToggleUserStatus = async (userId: string, nextStatus: boolean) => {
     try {
-      // In a real app, you would call your backend API
-      setUsers(prev => prev.map(u => 
-        u.uid === userId ? { ...u, isActive: !isActive } : u
-      ));
-    } catch (error) {
-      console.error('Error updating user status:', error);
+      await UserProfilesService.updateUserStatus(userId, nextStatus);
+    } catch (statusError) {
+      console.error('Error updating user status:', statusError);
+      setError('לא ניתן לעדכן סטטוס משתמש כרגע.');
     }
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (window.confirm('האם אתה בטוח שברצונך למחוק את המשתמש?')) {
-      try {
-        // In a real app, you would call your backend API
-        setUsers(prev => prev.filter(u => u.uid !== userId));
-      } catch (error) {
-        console.error('Error deleting user:', error);
-      }
+    if (!window.confirm('האם אתה בטוח שברצונך להשבית את המשתמש?')) {
+      return;
+    }
+
+    try {
+      await UserProfilesService.updateUserStatus(userId, false);
+    } catch (deleteError) {
+      console.error('Error disabling user:', deleteError);
+      setError('לא ניתן להשבית את המשתמש כרגע.');
     }
   };
 
-  const handleToggleAdmin = async (userId: string, isAdmin: boolean) => {
+  const handleToggleAdmin = async (userId: string, currentlyAdmin: boolean) => {
     try {
-      // In a real app, you would call your backend API
-      setUsers(prev => prev.map(u => 
-        u.uid === userId ? { ...u, isAdmin: !isAdmin } : u
-      ));
-    } catch (error) {
-      console.error('Error updating admin status:', error);
+      await UserProfilesService.updateUserRole(userId, currentlyAdmin ? 'user' : 'admin');
+    } catch (roleError) {
+      console.error('Error updating admin role:', roleError);
+      setError('לא ניתן לעדכן הרשאות כרגע.');
     }
   };
+
+  if (isProfileLoading || isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoadingSpinner size="lg" text="טוען משתמשים מהענן..." />
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return (
@@ -151,22 +86,10 @@ const AdminPanel: React.FC = () => {
         <Card className="w-full max-w-md text-center">
           <div className="mb-6">
             <FaCrown className="text-yellow-500 text-6xl mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              גישה נדחתה
-            </h2>
-            <p className="text-gray-600">
-              רק מנהלי מערכת יכולים לגשת לדף זה
-            </p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">גישה נדחתה</h2>
+            <p className="text-gray-600">רק מנהלי מערכת פעילים יכולים לגשת לדף זה</p>
           </div>
         </Card>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner size="lg" text="טוען משתמשים..." />
       </div>
     );
   }
@@ -175,12 +98,9 @@ const AdminPanel: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            פאנל ניהול משתמשים
-          </h1>
-          <p className="text-gray-600">
-            ניהול משתמשי המערכת
-          </p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">פאנל ניהול משתמשים</h1>
+          <p className="text-gray-600">ניהול משתמשים והרשאות מתוך Firestore בזמן אמת</p>
+          <p className="text-sm text-gray-500 mt-1">מחובר כמנהל: {profile?.displayName || profile?.email}</p>
         </div>
 
         {error && (
@@ -203,60 +123,56 @@ const AdminPanel: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user.uid} className="border-b border-gray-100 hover:bg-gray-50">
+                {users.map((managedUser) => (
+                  <tr key={managedUser.uid} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        {user.isAdmin && <FaCrown className="text-yellow-500" size={16} />}
-                        <span className="font-medium">{user.displayName}</span>
+                        {managedUser.role === 'admin' && <FaCrown className="text-yellow-500" size={16} />}
+                        <span className="font-medium">{managedUser.displayName}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-gray-600">{user.email}</td>
-                    <td className="py-3 px-4 text-gray-600">
-                      {new Date(user.createdAt).toLocaleDateString('he-IL')}
-                    </td>
+                    <td className="py-3 px-4 text-gray-600">{managedUser.email}</td>
+                    <td className="py-3 px-4 text-gray-600">{new Date(managedUser.createdAt).toLocaleDateString('he-IL')}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        user.isActive 
-                          ? 'bg-green-100 text-green-800' 
+                        managedUser.isActive
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
                       }`}>
-                        {user.isActive ? 'פעיל' : 'לא פעיל'}
+                        {managedUser.isActive ? 'פעיל' : 'לא פעיל'}
                       </span>
                     </td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        user.isAdmin 
-                          ? 'bg-purple-100 text-purple-800' 
+                        managedUser.role === 'admin'
+                          ? 'bg-purple-100 text-purple-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}>
-                        {user.isAdmin ? 'מנהל' : 'משתמש'}
+                        {managedUser.role === 'admin' ? 'מנהל' : 'משתמש'}
                       </span>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
                         <Button
                           size="sm"
-                          variant={user.isActive ? "secondary" : "primary"}
-                          onClick={() => handleToggleUserStatus(user.uid, user.isActive)}
+                          variant={managedUser.isActive ? 'secondary' : 'primary'}
+                          onClick={() => handleToggleUserStatus(managedUser.uid, !managedUser.isActive)}
                         >
-                          {user.isActive ? <FaBan size={12} /> : <FaCheck size={12} />}
+                          {managedUser.isActive ? <FaBan size={12} /> : <FaCheck size={12} />}
                         </Button>
-                        
-                        {!user.isAdmin && (
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => handleToggleAdmin(user.uid, user.isAdmin)}
-                          >
-                            <FaCrown size={12} />
-                          </Button>
-                        )}
-                        
+
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() => handleDeleteUser(user.uid)}
+                          onClick={() => handleToggleAdmin(managedUser.uid, managedUser.role === 'admin')}
+                        >
+                          <FaCrown size={12} />
+                        </Button>
+
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleDeleteUser(managedUser.uid)}
                           className="text-red-600 hover:text-red-700"
                         >
                           <FaTrash size={12} />
@@ -271,13 +187,11 @@ const AdminPanel: React.FC = () => {
         </Card>
 
         <div className="mt-6 text-center">
-          <Button
-            variant="primary"
-            onClick={fetchUsers}
-          >
-            <FaUsers size={16} />
-            רענן רשימה
+          <Button variant="primary" onClick={refreshFromServer} disabled={isRefreshing}>
+            <FaSyncAlt size={16} />
+            {isRefreshing ? 'מרענן מהענן...' : 'רענן מהענן'}
           </Button>
+          <p className="text-xs text-gray-500 mt-2">הרענון משתמש ב-getDocsFromServer כדי למשוך נתונים עדכניים ישירות מהענן.</p>
         </div>
       </div>
     </div>

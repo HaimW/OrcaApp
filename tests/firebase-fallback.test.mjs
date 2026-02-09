@@ -4,8 +4,9 @@ import fs from 'node:fs';
 
 const hook = fs.readFileSync('src/hooks/useDiveEntries.ts', 'utf8');
 
-test('addEntry keeps localStorage fallback on rejected async action', () => {
+test('addEntry fails when cloud save is rejected (no local persistence fallback)', () => {
   assert.match(hook, /result\.type\.endsWith\('\/rejected'\)/);
-  assert.match(hook, /LocalStorageService\.addDiveEntry\(newEntry\)/);
-  assert.match(hook, /dispatch\(addDiveEntryRealtime\(newEntry\)\)/);
+  assert.match(hook, /throw new Error\('שמירת הצלילה נכשלה בענן\. לא בוצעה שמירה מקומית\.'\)/);
+  assert.doesNotMatch(hook, /LocalStorageService\.addDiveEntry/);
+  assert.doesNotMatch(hook, /addDiveEntryRealtime/);
 });

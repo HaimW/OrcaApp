@@ -9,70 +9,8 @@ import {
   updateProfile,
   User
 } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { auth, db } from './config';
-
-interface StoredUser {
-  uid: string;
-  email: string;
-  displayName: string;
-  createdAt: string;
-  lastLoginAt: string;
-}
-
-const USERS_STORAGE_KEY = 'orca_users';
-
-const persistUserInFirestore = async (user: User): Promise<void> => {
-  if (!user.email) {
-    return;
-  }
-
-  try {
-    await setDoc(
-      doc(db, 'users', user.uid),
-      {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || user.email.split('@')[0],
-        createdAt: user.metadata.creationTime || new Date().toISOString(),
-        lastLoginAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
-  } catch (error) {
-    console.warn('Failed to persist user in Firestore:', error);
-  }
-};
-
-const persistUserLocally = (user: User): void => {
-  if (!user.email) {
-    return;
-  }
-
-  const nowIso = new Date().toISOString();
-
-  try {
-    const existingUsers = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]') as StoredUser[];
-    const existingUser = existingUsers.find(storedUser => storedUser.uid === user.uid);
-
-    const updatedUser: StoredUser = {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || user.email.split('@')[0],
-      createdAt: existingUser?.createdAt || user.metadata.creationTime || nowIso,
-      lastLoginAt: nowIso,
-    };
-
-    const updatedUsers = [
-      updatedUser,
-      ...existingUsers.filter(storedUser => storedUser.uid !== user.uid),
-    ];
-
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
-  } catch (error) {
-    console.warn('Failed to persist user list locally:', error);
-  }
-};
+import { auth } from './config';
+import { UserProfilesService } from './userProfiles';
 
 export class AuthService {
   // Sign in anonymously (for users who don't want to create an account)
@@ -99,8 +37,7 @@ export class AuthService {
         displayName: displayName
       });
 
-      persistUserLocally(result.user);
-      await persistUserInFirestore(result.user);
+      await UserProfilesService.upsertCurrentUser(result.user);
       
       console.log('User created successfully:', result.user.email);
       return result.user;
@@ -115,8 +52,7 @@ export class AuthService {
     try {
       console.log('Signing in with email...');
       const result = await signInWithEmailAndPassword(auth, email, password);
-      persistUserLocally(result.user);
-      await persistUserInFirestore(result.user);
+      await UserProfilesService.upsertCurrentUser(result.user);
       console.log('Signed in successfully:', result.user.email);
       return result.user;
     } catch (error) {
@@ -130,8 +66,7 @@ export class AuthService {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      persistUserLocally(result.user);
-      await persistUserInFirestore(result.user);
+      await UserProfilesService.upsertCurrentUser(result.user);
       console.log('Signed in with Google:', result.user.email);
       return result.user;
     } catch (error) {
@@ -162,8 +97,7 @@ export class AuthService {
     return onAuthStateChanged(auth, (user) => {
       console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
       if (user && !user.isAnonymous) {
-        persistUserLocally(user);
-        void persistUserInFirestore(user);
+        void UserProfilesService.upsertCurrentUser(user);
       }
       callback(user);
     });

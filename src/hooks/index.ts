@@ -8,3 +8,4 @@ export { useLazyLoading } from './useLazyLoading';
 export { useVirtualScrolling } from './useVirtualScrolling';
 
 
+export { useUserProfile } from './useUserProfile';
