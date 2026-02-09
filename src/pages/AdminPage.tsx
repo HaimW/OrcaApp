@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from '../hooks';
 import Header from '../components/Layout/Header';
 import { Card } from '../components/UI/Card';
 import { Button } from '../components/UI/Button';
+import Input from '../components/UI/Input';
 import OrcaImage from '../components/UI/OrcaImage';
 import { 
   FaUsers, 
@@ -25,6 +26,9 @@ const AdminPage: React.FC = () => {
   const { currentUser, users } = useAppSelector(state => state.auth);
   const { diveEntries } = useAppSelector(state => state.diveEntries);
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'data' | 'settings'>('overview');
+  const [whatsappGroupLink, setWhatsappGroupLink] = useState(
+    localStorage.getItem('orca-community-whatsapp') || ''
+  );
 
   // Check if user is admin
   if (!currentUser || currentUser.role !== 'admin') {
@@ -130,6 +134,12 @@ const AdminPage: React.FC = () => {
     link.click();
     
     URL.revokeObjectURL(url);
+  };
+
+
+  const handleSaveWhatsappGroup = () => {
+    localStorage.setItem('orca-community-whatsapp', whatsappGroupLink.trim());
+    alert('קישור קבוצת WhatsApp נשמר בהצלחה');
   };
 
   const OverviewTab = () => (
@@ -326,6 +336,27 @@ const AdminPage: React.FC = () => {
           <div className="p-4 border border-gray-200 rounded-lg">
             <h4 className="font-medium text-gray-800 mb-2">גרסת אפליקציה</h4>
             <p className="text-sm text-gray-600">אורקה v1.0.0</p>
+          </div>
+
+
+          <div className="p-4 border border-gray-200 rounded-lg">
+            <h4 className="font-medium text-gray-800 mb-2">קבוצת WhatsApp לדיווחים</h4>
+            <div className="space-y-3">
+              <Input
+                label="קישור הזמנה לקבוצה"
+                type="url"
+                dir="ltr"
+                value={whatsappGroupLink}
+                onChange={(e) => setWhatsappGroupLink(e.target.value)}
+                placeholder="https://chat.whatsapp.com/..."
+              />
+              <p className="text-xs text-gray-500">
+                רק מנהל מערכת מגדיר את הקבוצה. כל הדיווחים מהמשתמשים יישלחו לקבוצה זו.
+              </p>
+              <Button variant="secondary" onClick={handleSaveWhatsappGroup}>
+                שמירת קישור הקבוצה
+              </Button>
+            </div>
           </div>
 
           <div className="p-4 border border-gray-200 rounded-lg">

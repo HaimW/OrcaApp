@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { DiveEntry, Catch } from '../../types';
 import Card from '../UI/Card';
 import Button from '../UI/Button';
-import Input from '../UI/Input';
 import BasicInfoSection from './sections/BasicInfoSection';
 import WeatherSection from './sections/WeatherSection';
 import EquipmentSection from './sections/EquipmentSection';
@@ -13,21 +12,20 @@ import { FaSave, FaTimes, FaWhatsapp } from 'react-icons/fa';
 
 interface DiveEntryFormProps {
   initialData: Partial<DiveEntry>;
-  onSubmit: (data: Partial<DiveEntry>) => void;
+  onSubmit: (data: Partial<DiveEntry>, options?: { shareToWhatsapp: boolean }) => void;
   onCancel: () => void;
   isEditing?: boolean;
-  onSaveAndShare?: (data: Partial<DiveEntry>) => void;
 }
 
 const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
-  isEditing = false,
-  onSaveAndShare
+  isEditing = false
 }) => {
   const [formData, setFormData] = useState<Partial<DiveEntry>>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [shareToWhatsapp, setShareToWhatsapp] = useState(false);
 
   const updateFormData = (field: string, value: any) => {
     setFormData(prev => ({
@@ -85,7 +83,7 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit(formData);
+      onSubmit(formData, { shareToWhatsapp });
     }
   };
 
@@ -177,17 +175,18 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
               <FaTimes size={20} />
             </Button>
           </div>
-          
-          {/* WhatsApp Share Button - only for new entries */}
-          {!isEditing && onSaveAndShare && (
-            <Button
-              type="button"
-              onClick={() => onSaveAndShare(formData)}
-              className="w-full h-12 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2"
-            >
-              <FaWhatsapp size={20} />
-              שמירה ושיתוף לקהילת אורקה
-            </Button>
+
+          {!isEditing && (
+            <label className="flex items-center justify-center gap-2 p-3 rounded-lg border border-green-200 bg-green-50 text-green-800 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={shareToWhatsapp}
+                onChange={(e) => setShareToWhatsapp(e.target.checked)}
+                className="h-4 w-4 accent-green-600"
+              />
+              <FaWhatsapp size={18} />
+              <span className="text-sm font-medium">לשלוח גם דיווח לקבוצת WhatsApp</span>
+            </label>
           )}
         </div>
       </Card>
@@ -196,5 +195,4 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
 };
 
 export default DiveEntryForm;
-
 
