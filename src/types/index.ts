@@ -66,6 +66,19 @@ export interface Catch {
   notes?: string;
 }
 
+export interface CommunityCatchPost {
+  id: string;
+  userId: string;
+  userName: string;
+  species: string;
+  weightKg?: number;
+  location: string;
+  catchDate: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface WeatherCondition {
   condition: 'sunny' | 'cloudy' | 'rainy' | 'stormy' | 'foggy';
   label: string;
@@ -97,4 +110,3 @@ export interface FilterOptions {
 
 // Export user types
 export * from './user';
-

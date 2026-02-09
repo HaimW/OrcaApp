@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHome, FaList, FaPlus, FaChartBar, FaCog, FaShieldAlt } from 'react-icons/fa';
+import { FaHome, FaList, FaPlus, FaChartBar, FaCog, FaShieldAlt, FaUsers } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks';
 import { isUserAdmin } from '../../utils/adminConfig';
@@ -14,6 +14,7 @@ const BottomNav: React.FC = () => {
     { path: '/entries', icon: FaList, label: 'יומן' },
     { path: '/add', icon: FaPlus, label: 'הוספה', isSpecial: true },
     { path: '/stats', icon: FaChartBar, label: 'סטטיסטיקות' },
+    { path: '/community', icon: FaUsers, label: 'קהילה' },
     { path: '/settings', icon: FaCog, label: 'הגדרות' },
   ];
 
