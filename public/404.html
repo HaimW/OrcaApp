@@ -4,37 +4,25 @@
     <meta charset="utf-8">
     <title>אורקה - יומן צלילה</title>
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // https://github.com/rafgraph/spa-github-pages
-      // This script takes the current url and converts the path and query
-      // string into just a query string, and then redirects the browser
-      // to the new url with only a query string and hash fragment,
-      // e.g. https://www.foo.tld/one/two?a=b&c=d#qwe, becomes
-      // https://www.foo.tld/?/one/two&a=b~and~c=d#qwe
-      // Note: this 404.html file must be at least 512 bytes for it to work
-      // with Internet Explorer (it is currently > 512 bytes)
+      // Redirect GitHub Pages deep links to HashRouter path.
+      // Example: /OrcaApp/stats?x=1 -> /OrcaApp/#/stats?x=1
+      (function() {
+        var l = window.location;
+        var pathParts = l.pathname.split('/').filter(Boolean);
+        var repoName = pathParts.length > 0 ? pathParts[0] : '';
+        var basePath = repoName ? '/' + repoName + '/' : '/';
+        var routePath = pathParts.slice(1).join('/');
+        var hashRoute = '#/' + routePath;
 
-      // If you're creating a Project Pages site and NOT using a custom domain,
-      // then set pathSegmentsToKeep to 1 (enterprise users may need to set it to > 1).
-      // This way the code will only replace the route part of the path, and not
-      // the real directory in which the app resides, for example:
-      // https://username.github.io/repo-name/one/two?a=b&c=d#qwe becomes
-      // https://username.github.io/repo-name/?/one/two&a=b~and~c=d#qwe
-      // Otherwise, leave pathSegmentsToKeep as 0.
-      var pathSegmentsToKeep = 1;
+        if (routePath === '') {
+          hashRoute = '#/';
+        }
 
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
-
+        var search = l.search || '';
+        var hash = l.hash || '';
+        l.replace(l.protocol + '//' + l.host + basePath + hashRoute + search + hash);
+      })();
     </script>
   </head>
-  <body>
-  </body>
+  <body></body>
 </html>
