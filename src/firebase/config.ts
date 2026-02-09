@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, inMemoryPersistence, setPersistence } from 'firebase/auth';
+import { browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
 // Firebase configuration - Real config from Firebase Console
@@ -23,9 +23,9 @@ export const db = getFirestore(app, 'aaaa'); // שם ה-database שלך
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
-// Cloud-only session: do not persist auth state on local device between refreshes
-setPersistence(auth, inMemoryPersistence).catch((error) => {
-  console.warn('Failed to set in-memory auth persistence:', error);
+// Persist auth state between page reloads so users stay signed in on refresh (F5)
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.warn('Failed to set local auth persistence:', error);
 });
 
 // Development mode - uncomment for local testing

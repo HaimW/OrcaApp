@@ -13,9 +13,13 @@ const initialState: AppState = {
 // Async thunks for Firebase operations
 export const fetchDiveEntries = createAsyncThunk(
   'diveEntries/fetchAll',
-  async (_, { rejectWithValue }) => {
+  async (params: { isAdmin?: boolean; userId?: string } | undefined, { rejectWithValue }) => {
     try {
-      const userId = AuthService.getUserId();
+      if (params?.isAdmin) {
+        return await FirebaseService.getAllDiveEntries();
+      }
+
+      const userId = params?.userId || AuthService.getUserId();
       if (!userId) {
         return [] as DiveEntry[];
       }

@@ -5,6 +5,7 @@ import Header from '../components/Layout/Header';
 import DiveEntryForm from '../components/Forms/DiveEntryForm';
 import { DiveEntry } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { shareDiveEntryToWhatsappGroup } from '../utils/whatsappShare';
 
 const AddEntryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -51,10 +52,10 @@ const AddEntryPage: React.FC = () => {
     }
   }, [existingEntry]);
 
-  const handleSubmit = async (data: Partial<DiveEntry>) => {
-    console.log('handleSubmit called with:', data);
-    console.log('Current user:', user);
-    
+  const handleSubmit = async (
+    data: Partial<DiveEntry>,
+    options?: { shareToWhatsapp: boolean }
+  ) => {
     const entry: DiveEntry = {
       id: isEditing ? id! : uuidv4(),
       userId: user?.uid || 'anonymous',
@@ -63,17 +64,23 @@ const AddEntryPage: React.FC = () => {
       updatedAt: new Date().toISOString(),
     };
 
-    console.log('Final entry to save:', entry);
-
     try {
       if (isEditing) {
-        console.log('Updating entry...');
         await updateEntry(entry);
       } else {
-        console.log('Adding new entry...');
         await addEntry(entry);
       }
-      console.log('Entry saved successfully!');
+
+      if (!isEditing && options?.shareToWhatsapp) {
+        const hasGroupLink = Boolean(localStorage.getItem('orca-community-whatsapp')?.trim());
+
+        if (!hasGroupLink) {
+          alert('לא הוגדרה קבוצת WhatsApp על ידי מנהל המערכת. תיפתח WhatsApp כללית לשיתוף ידני.');
+        }
+
+        await shareDiveEntryToWhatsappGroup(entry);
+      }
+
       navigate('/entries');
     } catch (error) {
       console.error('Error saving entry:', error);

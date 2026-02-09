@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDiveEntries, useAnalytics } from '../hooks';
+import { useDiveEntries, useAnalytics, useUserProfile } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
@@ -9,17 +9,41 @@ import DiveEntryCard from '../components/Entries/DiveEntryCard';
 import FilterBar from '../components/Entries/FilterBar';
 import { FaPlus, FaFilter, FaSearch } from 'react-icons/fa';
 import { FilterOptions } from '../types';
+import { UserProfile, UserProfilesService } from '../firebase/userProfiles';
 
 const EntriesPage: React.FC = () => {
   const navigate = useNavigate();
   const { diveEntries, isLoading } = useDiveEntries();
   const { trackSearch, trackFilter } = useAnalytics();
+  const { isAdmin } = useUserProfile();
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
+  const [userProfiles, setUserProfiles] = useState<UserProfile[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<'all' | string>('all');
+
+
+  useEffect(() => {
+    if (!isAdmin) {
+      setUserProfiles([]);
+      setSelectedUserId('all');
+      return;
+    }
+
+    const unsubscribe = UserProfilesService.subscribeToAllProfiles(setUserProfiles);
+    return () => unsubscribe();
+  }, [isAdmin]);
+
+  const entriesForView = useMemo(() => {
+    if (!isAdmin || selectedUserId === 'all') {
+      return diveEntries;
+    }
+
+    return diveEntries.filter((entry) => entry.userId === selectedUserId);
+  }, [diveEntries, isAdmin, selectedUserId]);
 
   // Filter and search entries
-  const filteredEntries = diveEntries.filter((entry) => {
+  const filteredEntries = entriesForView.filter((entry) => {
     // Search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
@@ -117,6 +141,27 @@ const EntriesPage: React.FC = () => {
       />
       
       <div className="p-4 space-y-4">
+        {isAdmin && (
+          <Card padding="sm">
+            <label htmlFor="entries-user-filter" className="text-sm font-medium text-gray-700 mb-2 block">
+              הצגת צלילות לפי משתמש
+            </label>
+            <select
+              id="entries-user-filter"
+              className="input"
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+            >
+              <option value="all">כל המשתמשים</option>
+              {userProfiles.map((profile) => (
+                <option key={profile.uid} value={profile.uid}>
+                  {profile.displayName} ({profile.email})
+                </option>
+              ))}
+            </select>
+          </Card>
+        )}
+
         {/* Search and Filter Bar */}
         <Card padding="sm">
           <div className="space-y-3">
@@ -170,7 +215,7 @@ const EntriesPage: React.FC = () => {
         {/* Results Summary */}
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span>
-            {filteredEntries.length} מתוך {diveEntries.length} צלילות
+            {filteredEntries.length} מתוך {entriesForView.length} צלילות
           </span>
           {hasActiveFilters && (
             <span className="text-ocean-600 font-medium">
@@ -190,7 +235,7 @@ const EntriesPage: React.FC = () => {
               />
             ))}
           </div>
-        ) : diveEntries.length === 0 ? (
+        ) : entriesForView.length === 0 ? (
           /* Empty State - No entries */
           <Card className="text-center py-12">
             <div className="text-gray-400 mb-4">
