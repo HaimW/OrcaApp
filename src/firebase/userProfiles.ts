@@ -77,8 +77,6 @@ export class UserProfilesService {
         email: user.email,
         displayName: user.displayName || user.email.split('@')[0],
         createdAt: user.metadata.creationTime || new Date().toISOString(),
-        role: 'user',
-        isActive: true,
         lastLoginAt: serverTimestamp(),
       },
       { merge: true }
