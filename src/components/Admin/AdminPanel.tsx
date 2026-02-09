@@ -15,6 +15,14 @@ interface User {
   isActive: boolean;
 }
 
+interface StoredUser {
+  uid: string;
+  email: string;
+  displayName: string;
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
 const AdminPanel: React.FC = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -33,35 +41,19 @@ const AdminPanel: React.FC = () => {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      // In a real app, you would fetch users from your backend
-      // For now, we'll show a mock list
-      const mockUsers: User[] = [
-        {
-          uid: '1',
-          email: 'admin@orca.com',
-          displayName: 'מנהל מערכת',
-          createdAt: '2024-01-01',
-          isAdmin: true,
-          isActive: true
-        },
-        {
-          uid: '2',
-          email: 'user1@example.com',
-          displayName: 'משתמש 1',
-          createdAt: '2024-01-15',
-          isAdmin: false,
-          isActive: true
-        },
-        {
-          uid: '3',
-          email: 'user2@example.com',
-          displayName: 'משתמש 2',
-          createdAt: '2024-02-01',
-          isAdmin: false,
-          isActive: false
-        }
-      ];
-      setUsers(mockUsers);
+      const storedUsers = JSON.parse(localStorage.getItem('orca_users') || '[]') as StoredUser[];
+
+      const normalizedUsers = storedUsers.map(storedUser => ({
+        uid: storedUser.uid,
+        email: storedUser.email,
+        displayName: storedUser.displayName,
+        createdAt: storedUser.createdAt,
+        isAdmin: isUserAdmin(storedUser.email),
+        isActive: true,
+      }));
+
+      setUsers(normalizedUsers);
+      setError(null);
     } catch (error) {
       setError('שגיאה בטעינת רשימת המשתמשים');
       console.error('Error fetching users:', error);
