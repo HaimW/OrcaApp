@@ -160,5 +160,5 @@ createDefaultAdmin();
 
 ---
 
-**📅 תאריך יצירה:** ${new Date().toLocaleDateString('he-IL')}
+**📅 תאריך יצירה:** 09/02/2026
 **🔨 לעדכון המסמך הזה בעת הוספת תכונות חדשות**

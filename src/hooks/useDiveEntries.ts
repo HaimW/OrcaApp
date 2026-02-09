@@ -38,14 +38,8 @@ export const useDiveEntries = () => {
     try {
       console.log('Setting up Firebase listener for user:', user?.uid);
       
-      if (user?.isAnonymous) {
-        // For anonymous users, listen to all entries
-        unsubscribe = FirebaseService.subscribeToAllDiveEntries((entries) => {
-          console.log('Firebase listener received entries:', entries.length);
-          dispatch(setDiveEntries(entries));
-        });
-      } else if (user?.uid) {
-        // For authenticated users, listen to their entries only
+      if (user?.uid) {
+        // For all users (including anonymous), listen only to their entries
         unsubscribe = FirebaseService.subscribeToUserDiveEntries(user.uid, (entries) => {
           console.log('Firebase listener received entries:', entries.length);
           dispatch(setDiveEntries(entries));

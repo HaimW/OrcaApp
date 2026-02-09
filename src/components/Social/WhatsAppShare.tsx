@@ -3,6 +3,7 @@ import { FaWhatsapp, FaUsers, FaTimes } from 'react-icons/fa';
 import { DiveEntry } from '../../types';
 import Button from '../UI/Button';
 import Input from '../UI/Input';
+import { buildIndividualWhatsappUrl } from '../../utils/whatsapp';
 
 interface WhatsAppShareProps {
   entry: DiveEntry;
@@ -56,8 +57,7 @@ https://haimw.github.io/OrcaApp/`;
     }
 
     const message = formatDiveMessage();
-    const cleanPhoneNumber = phoneNumber.replace(/[^\d]/g, '');
-    const whatsappUrl = `https://wa.me/972${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.substring(1) : cleanPhoneNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = buildIndividualWhatsappUrl(phoneNumber, message);
     
     window.open(whatsappUrl, '_blank');
     onClose();
