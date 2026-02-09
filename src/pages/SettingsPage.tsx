@@ -72,6 +72,9 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+
+
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -182,6 +185,8 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
         </Card>
+
+
 
         {/* App Info */}
         <Card>
