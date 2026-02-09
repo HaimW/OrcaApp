@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector } from './useAppSelector';
 import { UserProfile, UserProfilesService } from '../firebase/userProfiles';
+import { isUserAdmin } from '../utils/adminConfig';
 
 export const useUserProfile = () => {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
@@ -24,10 +25,13 @@ export const useUserProfile = () => {
     return () => unsubscribe();
   }, [isAuthenticated, user?.uid, user?.isAnonymous]);
 
+  const isAdminByEmail = isUserAdmin(user?.email);
+  const isAdmin = (profile?.role === 'admin' && profile.isActive) || isAdminByEmail;
+
   return {
     profile,
     isProfileLoading,
-    isAdmin: profile?.role === 'admin' && profile.isActive,
-    isActive: profile?.isActive ?? false,
+    isAdmin,
+    isActive: profile?.isActive ?? isAdminByEmail,
   };
 };

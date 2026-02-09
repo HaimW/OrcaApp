@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocsFromServer,
   onSnapshot,
   query,
@@ -11,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 import { db } from './config';
+import { isUserAdmin } from '../utils/adminConfig';
 
 export type AppUserRole = 'user' | 'admin';
 
@@ -57,7 +59,7 @@ const normalizeProfile = (uid: string, data: FirestoreUserProfile): UserProfile 
     uid,
     email: data.email,
     displayName: data.displayName || data.email.split('@')[0],
-    role: data.role === 'admin' ? 'admin' : 'user',
+    role: data.role === 'admin' || isUserAdmin(data.email) ? 'admin' : 'user',
     isActive: data.isActive !== false,
     createdAt: normalizeDate(data.createdAt) || new Date().toISOString(),
     lastLoginAt: normalizeDate(data.lastLoginAt),
@@ -70,14 +72,24 @@ export class UserProfilesService {
       return;
     }
 
+    const userDocRef = doc(db, USERS_COLLECTION, user.uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+    const isNewUser = !userDocSnapshot.exists();
+
     await setDoc(
-      doc(db, USERS_COLLECTION, user.uid),
+      userDocRef,
       {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName || user.email.split('@')[0],
         createdAt: user.metadata.creationTime || new Date().toISOString(),
         lastLoginAt: serverTimestamp(),
+        ...(isNewUser
+          ? {
+              role: isUserAdmin(user.email) ? 'admin' : 'user',
+              isActive: true,
+            }
+          : {}),
       },
       { merge: true }
     );
