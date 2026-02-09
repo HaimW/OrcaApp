@@ -12,6 +12,7 @@ import AddEntryPage from './pages/AddEntryPage';
 import StatsPage from './pages/StatsPage';
 import SettingsPage from './pages/SettingsPage';
 import EntryDetailPage from './pages/EntryDetailPage';
+import CommunityPage from './pages/CommunityPage';
 
 function App() {
   console.log('App component rendering...');
@@ -29,6 +30,7 @@ function App() {
             <Route path="/add" element={<AddEntryPage />} />
             <Route path="/edit/:id" element={<AddEntryPage />} />
             <Route path="/stats" element={<StatsPage />} />
+            <Route path="/community" element={<CommunityPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/admin" element={<AdminPanel />} />
           </Routes>

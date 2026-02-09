@@ -1,24 +1,32 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow users to read and write their own dive entries
-    match /diveEntries/{entryId} {
-      allow read, write: if request.auth != null && 
-        (resource.data.userId == request.auth.uid || 
-         request.auth.token.email == 'admin@orca.com' ||
-         request.auth.token.email.matches('.*admin.*'));
+    function isSignedIn() {
+      return request.auth != null;
     }
-    
-    // Allow authenticated users to read all dive entries (for now)
-    match /diveEntries/{entryId} {
-      allow read: if request.auth != null;
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'admin@orca.com' ||
+        request.auth.token.email.matches('.*admin.*')
+      );
     }
-    
-    // Allow admin users to read and write all dive entries
+
     match /diveEntries/{entryId} {
-      allow read, write: if request.auth != null && 
-        (request.auth.token.email == 'admin@orca.com' ||
-         request.auth.token.email.matches('.*admin.*'));
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+    }
+
+    match /communityCatches/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
     }
   }
 }
