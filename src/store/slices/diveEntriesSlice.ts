@@ -15,7 +15,12 @@ export const fetchDiveEntries = createAsyncThunk(
   'diveEntries/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const entries = await FirebaseService.getAllDiveEntries();
+      const userId = AuthService.getUserId();
+      if (!userId) {
+        return [] as DiveEntry[];
+      }
+
+      const entries = await FirebaseService.getDiveEntriesByUser(userId);
       return entries;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch dive entries');
