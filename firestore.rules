@@ -20,6 +20,16 @@ service cloud.firestore {
       );
     }
 
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (
+        request.auth.uid == userId ||
+        isAdmin()
+      );
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
     match /communityCatches/{postId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;

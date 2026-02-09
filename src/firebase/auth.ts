@@ -9,7 +9,8 @@ import {
   updateProfile,
   User
 } from 'firebase/auth';
-import { auth } from './config';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { auth, db } from './config';
 
 interface StoredUser {
   uid: string;
@@ -20,6 +21,28 @@ interface StoredUser {
 }
 
 const USERS_STORAGE_KEY = 'orca_users';
+
+const persistUserInFirestore = async (user: User): Promise<void> => {
+  if (!user.email) {
+    return;
+  }
+
+  try {
+    await setDoc(
+      doc(db, 'users', user.uid),
+      {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || user.email.split('@')[0],
+        createdAt: user.metadata.creationTime || new Date().toISOString(),
+        lastLoginAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.warn('Failed to persist user in Firestore:', error);
+  }
+};
 
 const persistUserLocally = (user: User): void => {
   if (!user.email) {
@@ -77,6 +100,7 @@ export class AuthService {
       });
 
       persistUserLocally(result.user);
+      await persistUserInFirestore(result.user);
       
       console.log('User created successfully:', result.user.email);
       return result.user;
@@ -92,6 +116,7 @@ export class AuthService {
       console.log('Signing in with email...');
       const result = await signInWithEmailAndPassword(auth, email, password);
       persistUserLocally(result.user);
+      await persistUserInFirestore(result.user);
       console.log('Signed in successfully:', result.user.email);
       return result.user;
     } catch (error) {
@@ -106,6 +131,7 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       persistUserLocally(result.user);
+      await persistUserInFirestore(result.user);
       console.log('Signed in with Google:', result.user.email);
       return result.user;
     } catch (error) {
@@ -135,6 +161,10 @@ export class AuthService {
     console.log('Setting up auth state listener');
     return onAuthStateChanged(auth, (user) => {
       console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
+      if (user && !user.isAnonymous) {
+        persistUserLocally(user);
+        void persistUserInFirestore(user);
+      }
       callback(user);
     });
   }

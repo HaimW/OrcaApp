@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
 import { useAuth } from '../../hooks';
+import { db } from '../../firebase/config';
 import Card from '../UI/Card';
 import Button from '../UI/Button';
 import LoadingSpinner from '../UI/LoadingSpinner';
@@ -23,6 +25,26 @@ interface StoredUser {
   lastLoginAt?: string;
 }
 
+interface FirestoreUserRecord {
+  uid?: string;
+  email?: string;
+  displayName?: string;
+  createdAt?: { toDate?: () => Date } | string;
+  isActive?: boolean;
+}
+
+const normalizeCreatedAt = (value: FirestoreUserRecord['createdAt']): string => {
+  if (!value) {
+    return new Date().toISOString();
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  return value.toDate?.().toISOString() || new Date().toISOString();
+};
+
 const AdminPanel: React.FC = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -41,9 +63,37 @@ const AdminPanel: React.FC = () => {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const storedUsers = JSON.parse(localStorage.getItem('orca_users') || '[]') as StoredUser[];
 
-      const normalizedUsers = storedUsers.map(storedUser => ({
+      let fetchedUsers: StoredUser[] = [];
+
+      try {
+        const snapshot = await getDocs(collection(db, 'users'));
+        fetchedUsers = snapshot.docs
+          .map((docSnapshot) => {
+            const data = docSnapshot.data() as FirestoreUserRecord;
+            const email = data.email;
+
+            if (!email) {
+              return null;
+            }
+
+            return {
+              uid: data.uid || docSnapshot.id,
+              email,
+              displayName: data.displayName || email.split('@')[0],
+              createdAt: normalizeCreatedAt(data.createdAt),
+            };
+          })
+          .filter((storedUser): storedUser is StoredUser => storedUser !== null);
+      } catch (firestoreError) {
+        console.warn('Falling back to localStorage users list:', firestoreError);
+      }
+
+      if (fetchedUsers.length === 0) {
+        fetchedUsers = JSON.parse(localStorage.getItem('orca_users') || '[]') as StoredUser[];
+      }
+
+      const normalizedUsers = fetchedUsers.map(storedUser => ({
         uid: storedUser.uid,
         email: storedUser.email,
         displayName: storedUser.displayName,
