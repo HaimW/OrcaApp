@@ -11,19 +11,20 @@ import {
 } from '../store/slices/diveEntriesSlice';
 import { FirebaseService } from '../firebase/firestore';
 import { DiveEntry } from '../types';
-import { isUserAdmin } from '../utils/adminConfig';
+import { useUserProfile } from './useUserProfile';
 
 export const useDiveEntries = () => {
   const dispatch = useAppDispatch();
   const { diveEntries, isLoading, error } = useAppSelector((state) => state.diveEntries);
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAdmin } = useUserProfile();
 
   // Fetch entries on mount or when user changes
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(fetchDiveEntries());
+      dispatch(fetchDiveEntries({ isAdmin, userId: user?.uid }));
     }
-  }, [dispatch, isAuthenticated, user?.uid]);
+  }, [dispatch, isAuthenticated, isAdmin, user?.uid]);
 
   // Set up real-time listener
   useEffect(() => {
@@ -35,7 +36,7 @@ export const useDiveEntries = () => {
       console.log('Setting up Firebase listener for user:', user?.uid);
       
       if (user?.uid) {
-        const subscribeToEntries = isUserAdmin(user.email)
+        const subscribeToEntries = isAdmin
           ? FirebaseService.subscribeToAllDiveEntries
           : (callback: (entries: DiveEntry[]) => void) => FirebaseService.subscribeToUserDiveEntries(user.uid, callback);
 
@@ -54,7 +55,7 @@ export const useDiveEntries = () => {
         unsubscribe();
       }
     };
-  }, [dispatch, isAuthenticated, user?.uid, user?.isAnonymous]);
+  }, [dispatch, isAuthenticated, isAdmin, user?.uid, user?.isAnonymous]);
 
   const addEntry = async (entry: Omit<DiveEntry, 'id'>) => {
     try {

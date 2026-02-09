@@ -1,27 +1,49 @@
-import React, { useMemo } from 'react';
-import { useDiveEntries } from '../hooks';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useDiveEntries, useUserProfile } from '../hooks';
 import Header from '../components/Layout/Header';
 import Card from '../components/UI/Card';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
-import { 
-  FaWater, 
-  FaFish, 
-  FaClock, 
-  FaEye, 
+import {
+  FaWater,
+  FaFish,
+  FaClock,
+  FaEye,
   FaThermometerHalf,
   FaChartBar,
   FaStar,
-  FaCalendarAlt
+  FaCalendarAlt,
 } from 'react-icons/fa';
 import { format, parseISO } from 'date-fns';
-import { he } from 'date-fns/locale';
 import { FISHING_METHODS } from '../utils/constants';
+import { UserProfile, UserProfilesService } from '../firebase/userProfiles';
 
 const StatsPage: React.FC = () => {
   const { diveEntries, isLoading } = useDiveEntries();
+  const { isAdmin } = useUserProfile();
+  const [userProfiles, setUserProfiles] = useState<UserProfile[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<'all' | string>('all');
+
+  useEffect(() => {
+    if (!isAdmin) {
+      setUserProfiles([]);
+      setSelectedUserId('all');
+      return;
+    }
+
+    const unsubscribe = UserProfilesService.subscribeToAllProfiles(setUserProfiles);
+    return () => unsubscribe();
+  }, [isAdmin]);
+
+  const visibleEntries = useMemo(() => {
+    if (!isAdmin || selectedUserId === 'all') {
+      return diveEntries;
+    }
+
+    return diveEntries.filter((entry) => entry.userId === selectedUserId);
+  }, [diveEntries, isAdmin, selectedUserId]);
 
   const stats = useMemo(() => {
-    if (diveEntries.length === 0) {
+    if (visibleEntries.length === 0) {
       return {
         totalDives: 0,
         totalFish: 0,
@@ -33,49 +55,37 @@ const StatsPage: React.FC = () => {
         avgWaterTemp: 0,
         fishBySpecies: {},
         divesByMethod: {},
-        divesByMonth: {},
         recentActivity: 0,
       };
     }
 
-    const totalDives = diveEntries.length;
-    const totalFish = diveEntries.reduce((sum, entry) => 
-      sum + entry.catches.reduce((catchSum, c) => catchSum + c.quantity, 0), 0
+    const totalDives = visibleEntries.length;
+    const totalFish = visibleEntries.reduce(
+      (sum, entry) => sum + entry.catches.reduce((catchSum, c) => catchSum + c.quantity, 0),
+      0,
     );
-    const totalDuration = diveEntries.reduce((sum, entry) => sum + entry.duration, 0);
-    const avgDepth = diveEntries.reduce((sum, entry) => sum + entry.depth, 0) / totalDives;
-    const maxDepth = Math.max(...diveEntries.map(entry => entry.depth));
-    const avgVisibility = diveEntries.reduce((sum, entry) => sum + entry.visibility, 0) / totalDives;
-    const avgRating = diveEntries.reduce((sum, entry) => sum + entry.rating, 0) / totalDives;
-    const avgWaterTemp = diveEntries.reduce((sum, entry) => sum + entry.weather.waterTemperature, 0) / totalDives;
+    const totalDuration = visibleEntries.reduce((sum, entry) => sum + entry.duration, 0);
+    const avgDepth = visibleEntries.reduce((sum, entry) => sum + entry.depth, 0) / totalDives;
+    const maxDepth = Math.max(...visibleEntries.map((entry) => entry.depth));
+    const avgVisibility = visibleEntries.reduce((sum, entry) => sum + entry.visibility, 0) / totalDives;
+    const avgRating = visibleEntries.reduce((sum, entry) => sum + entry.rating, 0) / totalDives;
+    const avgWaterTemp = visibleEntries.reduce((sum, entry) => sum + entry.weather.waterTemperature, 0) / totalDives;
 
-    // Fish by species
     const fishBySpecies: Record<string, number> = {};
-    diveEntries.forEach(entry => {
-      entry.catches.forEach(catch_ => {
+    visibleEntries.forEach((entry) => {
+      entry.catches.forEach((catch_) => {
         fishBySpecies[catch_.species] = (fishBySpecies[catch_.species] || 0) + catch_.quantity;
       });
     });
 
-    // Dives by fishing method
     const divesByMethod: Record<string, number> = {};
-    diveEntries.forEach(entry => {
+    visibleEntries.forEach((entry) => {
       divesByMethod[entry.fishingType] = (divesByMethod[entry.fishingType] || 0) + 1;
     });
 
-    // Dives by month
-    const divesByMonth: Record<string, number> = {};
-    diveEntries.forEach(entry => {
-      const month = format(parseISO(entry.date), 'yyyy-MM');
-      divesByMonth[month] = (divesByMonth[month] || 0) + 1;
-    });
-
-    // Recent activity (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const recentActivity = diveEntries.filter(entry => 
-      parseISO(entry.date) >= thirtyDaysAgo
-    ).length;
+    const recentActivity = visibleEntries.filter((entry) => parseISO(entry.date) >= thirtyDaysAgo).length;
 
     return {
       totalDives,
@@ -88,18 +98,17 @@ const StatsPage: React.FC = () => {
       avgWaterTemp,
       fishBySpecies,
       divesByMethod,
-      divesByMonth,
       recentActivity,
     };
-  }, [diveEntries]);
+  }, [visibleEntries]);
 
   const topFishSpecies = Object.entries(stats.fishBySpecies)
-    .sort(([,a], [,b]) => b - a)
+    .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
 
   const methodLabels = Object.entries(stats.divesByMethod)
     .map(([method, count]) => ({
-      method: FISHING_METHODS.find(m => m.type === method)?.label || method,
+      method: FISHING_METHODS.find((m) => m.type === method)?.label || method,
       count,
     }))
     .sort((a, b) => b.count - a.count);
@@ -107,25 +116,41 @@ const StatsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header title="סטטיסטיקות" />
-      
+
       <div className="p-4 space-y-6">
+        {isAdmin && (
+          <Card padding="sm">
+            <label htmlFor="stats-user-filter" className="text-sm font-medium text-gray-700 mb-2 block">
+              הצגת נתונים לפי משתמש
+            </label>
+            <select
+              id="stats-user-filter"
+              className="input"
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+            >
+              <option value="all">כל המשתמשים</option>
+              {userProfiles.map((profile) => (
+                <option key={profile.uid} value={profile.uid}>
+                  {profile.displayName} ({profile.email})
+                </option>
+              ))}
+            </select>
+          </Card>
+        )}
+
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <LoadingSpinner size="lg" text="טוען סטטיסטיקות..." />
           </div>
-        ) : diveEntries.length === 0 ? (
+        ) : visibleEntries.length === 0 ? (
           <Card className="text-center py-12">
             <FaChartBar className="text-gray-400 mx-auto mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">
-              אין עדיין נתונים לסטטיסטיקות
-            </h3>
-            <p className="text-gray-500">
-              הוסיפו צלילות כדי לראות סטטיסטיקות מפורטות
-            </p>
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">אין עדיין נתונים לסטטיסטיקות</h3>
+            <p className="text-gray-500">הוסיפו צלילות כדי לראות סטטיסטיקות מפורטות</p>
           </Card>
         ) : (
           <>
-            {/* Overview Stats */}
             <div className="grid grid-cols-2 gap-4">
               <Card className="text-center">
                 <div className="bg-ocean-100 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
@@ -147,9 +172,7 @@ const StatsPage: React.FC = () => {
                 <div className="bg-blue-100 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
                   <FaClock className="text-blue-600" size={24} />
                 </div>
-                <div className="text-2xl font-bold text-gray-800">
-                  {Math.round(stats.totalDuration / 60)}
-                </div>
+                <div className="text-2xl font-bold text-gray-800">{Math.round(stats.totalDuration / 60)}</div>
                 <div className="text-sm text-gray-600">שעות במים</div>
               </Card>
 
@@ -157,14 +180,11 @@ const StatsPage: React.FC = () => {
                 <div className="bg-green-100 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
                   <FaStar className="text-yellow-500" size={24} />
                 </div>
-                <div className="text-2xl font-bold text-gray-800">
-                  {stats.avgRating.toFixed(1)}
-                </div>
+                <div className="text-2xl font-bold text-gray-800">{stats.avgRating.toFixed(1)}</div>
                 <div className="text-sm text-gray-600">דירוג ממוצע</div>
               </Card>
             </div>
 
-            {/* Detailed Stats */}
             <Card>
               <h3 className="text-lg font-semibold mb-4">נתונים מפורטים</h3>
               <div className="space-y-3">
@@ -210,7 +230,6 @@ const StatsPage: React.FC = () => {
               </div>
             </Card>
 
-            {/* Top Fish Species */}
             {topFishSpecies.length > 0 && (
               <Card>
                 <h3 className="text-lg font-semibold mb-4">דגים מובילים</h3>
@@ -223,30 +242,25 @@ const StatsPage: React.FC = () => {
                         </div>
                         <span className="font-medium">{species}</span>
                       </div>
-                      <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-semibold">
-                        {count}
-                      </span>
+                      <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-semibold">{count}</span>
                     </div>
                   ))}
                 </div>
               </Card>
             )}
 
-            {/* Fishing Methods */}
             {methodLabels.length > 0 && (
               <Card>
                 <h3 className="text-lg font-semibold mb-4">שיטות דיג</h3>
                 <div className="space-y-3">
-                  {methodLabels.map(({ method, count }, index) => (
+                  {methodLabels.map(({ method, count }) => (
                     <div key={method} className="flex items-center justify-between">
                       <span className="font-medium">{method}</span>
                       <div className="flex items-center gap-2">
                         <div className="bg-gray-200 rounded-full h-2 w-20">
-                          <div 
+                          <div
                             className="bg-ocean-500 h-2 rounded-full"
-                            style={{ 
-                              width: `${(count / Math.max(...methodLabels.map(m => m.count))) * 100}%` 
-                            }}
+                            style={{ width: `${(count / Math.max(...methodLabels.map((m) => m.count))) * 100}%` }}
                           />
                         </div>
                         <span className="bg-gray-100 px-2 py-1 rounded text-sm font-semibold min-w-[2rem] text-center">
@@ -258,20 +272,6 @@ const StatsPage: React.FC = () => {
                 </div>
               </Card>
             )}
-
-            {/* Orca Gallery */}
-            <Card>
-              <h3 className="text-lg font-semibold mb-4">גלריית אורקות</h3>
-              <div className="grid grid-cols-4 gap-3">
-                <OrcaImage size="lg" shape="rounded" specificImage="orca-underwater" />
-                <OrcaImage size="lg" shape="rounded" specificImage="orca-jumping" />
-                <OrcaImage size="lg" shape="rounded" specificImage="orca-norway-sunrise" />
-                <OrcaImage size="lg" shape="rounded" specificImage="orca-antarctica" />
-              </div>
-              <p className="text-xs text-gray-500 mt-3 text-center">
-                תמונות מקצועיות מ-Getty Images
-              </p>
-            </Card>
           </>
         )}
       </div>
