@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence } from 'firebase/firestore';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getStorage, connectStorageEmulator } from 'firebase/storage';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth, inMemoryPersistence, setPersistence } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 // Firebase configuration - Real config from Firebase Console
 const firebaseConfig = {
@@ -23,13 +23,9 @@ export const db = getFirestore(app, 'aaaa'); // שם ה-database שלך
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
-// Enable offline persistence
-enableIndexedDbPersistence(db).catch((err) => {
-  if (err.code === 'failed-precondition') {
-    console.warn('Persistence failed: Multiple tabs open');
-  } else if (err.code === 'unimplemented') {
-    console.warn('Persistence not available in this browser');
-  }
+// Cloud-only session: do not persist auth state on local device between refreshes
+setPersistence(auth, inMemoryPersistence).catch((error) => {
+  console.warn('Failed to set in-memory auth persistence:', error);
 });
 
 // Development mode - uncomment for local testing

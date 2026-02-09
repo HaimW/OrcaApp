@@ -8,13 +8,8 @@ import {
   importDiveEntriesAsync,
   clearAllEntriesAsync,
   setDiveEntries,
-  addDiveEntryRealtime,
-  updateDiveEntryRealtime,
-  removeDiveEntryRealtime,
 } from '../store/slices/diveEntriesSlice';
 import { FirebaseService } from '../firebase/firestore';
-import { LocalStorageService } from '../services/localStorage';
-import { AuthService } from '../firebase/auth';
 import { DiveEntry } from '../types';
 
 export const useDiveEntries = () => {
@@ -47,9 +42,6 @@ export const useDiveEntries = () => {
       }
     } catch (error) {
       console.error('Firebase listener failed:', error);
-      // Fallback to localStorage
-      const entries = LocalStorageService.getDiveEntries();
-      dispatch(setDiveEntries(entries));
     }
 
     return () => {
@@ -70,27 +62,14 @@ export const useDiveEntries = () => {
       
       console.log('Attempting to add entry to Firebase:', entryWithUser);
       
-      // Try Firebase first
       const result = await dispatch(addDiveEntryAsync(entryWithUser));
-      
       console.log('Firebase result:', result.type);
-      
-      // If Firebase fails, use localStorage as fallback
+
       if (result.type.endsWith('/rejected')) {
-        console.log('Firebase failed, using localStorage fallback');
-        const newEntry: DiveEntry = {
-          ...entryWithUser,
-          id: Date.now().toString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        LocalStorageService.addDiveEntry(newEntry);
-        dispatch(addDiveEntryRealtime(newEntry));
-        console.log('Entry added successfully to localStorage');
-      } else {
-        console.log('Entry added successfully to Firebase');
+        throw new Error('שמירת הצלילה נכשלה בענן. לא בוצעה שמירה מקומית.');
       }
-      
+
+      console.log('Entry added successfully to Firebase');
       return result;
     } catch (error) {
       console.error('Error adding entry:', error);
