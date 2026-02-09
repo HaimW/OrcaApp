@@ -2,6 +2,7 @@
 // רשימת מיילים של אדמינים
 export const ADMIN_EMAILS = [
   'yafim.sh@gmail.com',
+  'admin@orca.com',
   // הוסף כאן מיילים נוספים של אדמינים
   // 'your-email@example.com',
 ];
@@ -13,17 +14,10 @@ export const ADMIN_EMAILS = [
  */
 export const isUserAdmin = (email: string | null | undefined): boolean => {
   if (!email) return false;
-  
-  // בדיקה אם המייל ברשימת האדמינים
-  if (ADMIN_EMAILS.includes(email.toLowerCase())) {
-    return true;
-  }
-  
-  // בדיקה אם המייל מכיל 'admin'
-  if (email.toLowerCase().includes('admin')) {
-    return true;
-  }
-  
-  return false;
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // בדיקה אם המייל ברשימת האדמינים בלבד (ללא wildcard)
+  return ADMIN_EMAILS.includes(normalizedEmail);
 };
 
