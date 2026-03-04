@@ -9,7 +9,6 @@ const links = [
   { to: '/community', label: 'Community' },
   { to: '/gallery', label: 'Gallery' },
   { to: '/contact', label: 'Contact / Signup' },
-  { to: '/entries', label: 'Dive Log' },
 ];
 
 const MarketingNav: React.FC = () => {

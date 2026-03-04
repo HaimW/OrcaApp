@@ -23,7 +23,6 @@ const HomePage: React.FC = () => {
             <p className="mt-4 max-w-2xl text-slate-100">Modern training, responsible hunting ethics, and a connected dive log system for every member.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <button onClick={() => navigate('/contact')} className="rounded-xl bg-amber-400 px-5 py-3 font-semibold text-slate-900">Join Orca's</button>
-              <button onClick={() => navigate('/entries')} className="rounded-xl border border-cyan-200/50 bg-white/10 px-5 py-3">Open dive log</button>
               <button onClick={() => navigate('/add')} className="rounded-xl border border-cyan-200/50 bg-white/10 px-5 py-3">Log a dive</button>
             </div>
             <p className="mt-4 text-sm text-cyan-100">{isAnonymous ? 'Guest mode active' : `Welcome back, ${getUserDisplayName()}`} · {diveEntries.length} logged dives</p>

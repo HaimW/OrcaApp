@@ -20,7 +20,7 @@ import ContactPage from './pages/ContactPage';
 
 function App() {
   const location = useLocation();
-  const showBottomNav = ['/entries', '/add', '/edit', '/stats', '/settings', '/admin'].some((path) => location.pathname.startsWith(path));
+  const showBottomNav = ['/entries', '/add', '/stats', '/settings', '/admin'].some((path) => location.pathname.startsWith(path));
 
   return (
     <ErrorBoundary>
