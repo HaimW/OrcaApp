@@ -33,6 +33,8 @@ export const WhatsAppShare: React.FC<WhatsAppShareProps> = ({
       ? `\n🌤️ מזג אוויר: ${entry.weather.condition}, טמפ' מים: ${entry.weather.waterTemperature}°C`
       : '';
 
+    const appUrl = `${window.location.origin}${window.location.pathname}#/entries`;
+
     return `🌊 *יומן צלילה חדש באורקה!* 🐋
 
 📍 *מיקום:* ${entry.location}
@@ -47,7 +49,7 @@ ${entry.equipment.length > 0 ? `\n🎣 *ציוד:* ${entry.equipment.join(', ')}
 
 ---
 📱 נשלח מאפליקציית אורקה - יומן הצלילה המתקדם
-https://haimw.github.io/OrcaApp/`;
+${appUrl}`;
   };
 
   const handleShareToIndividual = () => {
