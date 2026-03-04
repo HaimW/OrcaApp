@@ -18,10 +18,10 @@ const AddEntryPage: React.FC = () => {
   
   const [formData, setFormData] = useState<Partial<DiveEntry>>({
     date: new Date().toISOString().split('T')[0],
-    time: new Date().toTimeString().slice(0, 5),
     startTime: new Date().toTimeString().slice(0, 5),
     endTime: '',
-    location: '',
+    location: 'צפון',
+    detailedLocation: '',
     depth: 0,
     duration: 0,
     visibility: 0,
@@ -29,13 +29,10 @@ const AddEntryPage: React.FC = () => {
       condition: 'sunny',
       temperature: 25,
       waterTemperature: 22,
-      windSpeed: 0,
-      windForce: 0,
       windDirection: 'צפון',
-      waveHeight: 0,
-      swellForce: 0,
-      swellDirection: 'צפון',
-      current: 'none',
+      windIntensity: 0,
+      currentDirection: 'צפון',
+      currentIntensity: 0,
     },
     equipment: {
       mask: '',
@@ -53,7 +50,10 @@ const AddEntryPage: React.FC = () => {
 
   useEffect(() => {
     if (existingEntry) {
-      setFormData(existingEntry);
+      setFormData({
+        ...existingEntry,
+        startTime: existingEntry.startTime || existingEntry.time || '',
+      });
     }
   }, [existingEntry]);
 

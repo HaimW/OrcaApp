@@ -20,7 +20,7 @@ import {
 } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { he } from 'date-fns/locale';
-import { FISHING_METHODS, WEATHER_CONDITIONS, CURRENT_LEVELS } from '../../utils/constants';
+import { FISHING_METHODS, WEATHER_CONDITIONS } from '../../utils/constants';
 
 interface EntryDetailsProps {
   entry: DiveEntry;
@@ -31,7 +31,6 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
 
   const fishingMethod = FISHING_METHODS.find(m => m.type === entry.fishingType);
   const weatherCondition = WEATHER_CONDITIONS.find(w => w.condition === entry.weather.condition);
-  const currentLevel = CURRENT_LEVELS.find(c => c.value === entry.weather.current);
 
   const formatDateTime = (dateStr: string, timeStr: string) => {
     try {
@@ -65,9 +64,9 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
                 
                 <div className="text-gray-600 space-y-1">
                   <div>{date}</div>
-                  <div>שעת כניסה: {time}</div>
-                  {entry.startTime && <div>התחלה: {entry.startTime}</div>}
-                  {entry.endTime && <div>סיום: {entry.endTime}</div>}
+                  <div>שעת כניסה: {entry.startTime || time}</div>
+                  <div>שעת יציאה: {entry.endTime || '--:--'}</div>
+                  {entry.detailedLocation && <div>מיקום מדויק (פרטי): {entry.detailedLocation}</div>}
                 </div>
               </div>
 
@@ -170,18 +169,14 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-gray-600">רוח</span>
-                <span className="font-medium">{entry.weather.windSpeed} קמ״ש {entry.weather.windDirection} {entry.weather.windForce ? `· כוח ${entry.weather.windForce}` : ''}</span>
+                <span className="font-medium">כיוון {entry.weather.windDirection} · עוצמה {entry.weather.windIntensity}</span>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-600">סוואל / גלים</span>
-                <span className="font-medium">{entry.weather.waveHeight} מטר {entry.weather.swellDirection || ''} {entry.weather.swellForce ? `· כוח ${entry.weather.swellForce}` : ''}</span>
-              </div>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-600">זרם</span>
-              <span className="font-medium">{currentLevel?.label}</span>
+              <span className="font-medium">כיוון {entry.weather.currentDirection} · עוצמה {entry.weather.currentIntensity}</span>
             </div>
           </div>
         </Card>

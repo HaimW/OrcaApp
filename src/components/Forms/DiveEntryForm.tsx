@@ -59,8 +59,12 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
       newErrors.date = 'תאריך נדרש';
     }
 
-    if (!formData.time) {
-      newErrors.time = 'שעה נדרשת';
+    if (!formData.startTime) {
+      newErrors.startTime = 'זמן כניסה נדרש';
+    }
+
+    if (!formData.endTime) {
+      newErrors.endTime = 'זמן יציאה נדרש';
     }
 
     if (!formData.location?.trim()) {
@@ -99,7 +103,7 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit({ ...formData, duration: calculateDurationMinutes() }, { shareToWhatsapp });
+      onSubmit({ ...formData, time: formData.startTime || formData.time || '', duration: calculateDurationMinutes() }, { shareToWhatsapp });
     }
   };
 

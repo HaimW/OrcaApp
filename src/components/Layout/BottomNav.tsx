@@ -43,11 +43,7 @@ const BottomNav: React.FC = () => {
                 size={item.isSpecial ? 24 : 20}
                 className={`mb-1 ${item.isSpecial ? 'text-white' : ''}`}
               />
-              <span
-                className={`text-xs font-medium ${
-                  item.isSpecial ? 'text-white' : ''
-                }`}
-              >
+              <span className={`text-xs font-medium ${item.isSpecial ? 'text-white' : ''}`}>
                 {item.label}
               </span>
             </button>
