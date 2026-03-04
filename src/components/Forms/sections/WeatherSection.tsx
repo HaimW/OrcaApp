@@ -95,13 +95,23 @@ const WeatherSection: React.FC<WeatherSectionProps> = ({
         </div>
 
         {/* Wind */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Input
             label="מהירות רוח (קמ/ש)"
             type="number"
             min="0"
             value={data.windSpeed || ''}
             onChange={(e) => onUpdate('windSpeed', parseInt(e.target.value) || 0)}
+            icon={<FaWind />}
+          />
+
+          <Input
+            label="עוצמת רוח (1-12)"
+            type="number"
+            min="0"
+            max="12"
+            value={data.windForce || ''}
+            onChange={(e) => onUpdate('windForce', parseInt(e.target.value) || 0)}
             icon={<FaWind />}
           />
           
@@ -127,7 +137,7 @@ const WeatherSection: React.FC<WeatherSectionProps> = ({
         </div>
 
         {/* Waves and Current */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Input
             label="גובה גלים (מטר)"
             type="number"
@@ -137,7 +147,25 @@ const WeatherSection: React.FC<WeatherSectionProps> = ({
             onChange={(e) => onUpdate('waveHeight', parseFloat(e.target.value) || 0)}
             icon={<FaWater />}
           />
-          
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="עוצמת סוואל"
+              type="number"
+              min="0"
+              max="12"
+              value={data.swellForce || ''}
+              onChange={(e) => onUpdate('swellForce', parseInt(e.target.value) || 0)}
+              icon={<FaWater />}
+            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">כיוון סוואל</label>
+              <select className="input" value={data.swellDirection || 'צפון'} onChange={(e) => onUpdate('swellDirection', e.target.value)}>
+                <option value="צפון">צפון</option><option value="צפון מזרח">צפון מזרח</option><option value="מזרח">מזרח</option><option value="דרום מזרח">דרום מזרח</option><option value="דרום">דרום</option><option value="דרום מערב">דרום מערב</option><option value="מערב">מערב</option><option value="צפון מערב">צפון מערב</option>
+              </select>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               עוצמת זרם

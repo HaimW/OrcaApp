@@ -71,7 +71,7 @@ const FirebaseStatus: React.FC = () => {
   const Icon = statusInfo.icon;
 
   return (
-    <div className={`fixed top-4 right-4 z-50 ${statusInfo.bgColor} ${statusInfo.borderColor} border rounded-lg p-3 shadow-lg max-w-xs`}>
+    <div className={`fixed top-16 right-4 z-40 ${statusInfo.bgColor} ${statusInfo.borderColor} border rounded-lg p-3 shadow-lg max-w-xs`}>
       <div 
         className="flex items-center gap-2 cursor-pointer"
         onClick={() => setShowDetails(!showDetails)}

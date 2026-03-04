@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Heebo:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,7 +10,7 @@
   }
   body {
     @apply text-slate-900 bg-slate-50;
-    font-family: 'Heebo', sans-serif;
+    font-family: 'Inter', 'Heebo', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     direction: rtl;
     min-height: 100vh;
@@ -118,3 +118,11 @@
   }
 }
 
+
+.marketing-ltr {
+  direction: ltr;
+}
+
+.font-display {
+  font-family: 'Barlow Condensed', 'Heebo', sans-serif;
+}

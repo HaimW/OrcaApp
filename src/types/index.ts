@@ -3,6 +3,8 @@ export interface DiveEntry {
   userId: string; // Link to user
   date: string;
   time: string;
+  startTime?: string;
+  endTime?: string;
   location: string;
   coordinates?: {
     lat: number;
@@ -20,8 +22,11 @@ export interface DiveEntry {
     temperature: number; // טמפרטורת אוויר
     waterTemperature: number; // טמפרטורת מים
     windSpeed: number; // מהירות רוח
+    windForce?: number; // עוצמת רוח
     windDirection: string; // כיוון רוח
     waveHeight: number; // גובה גלים
+    swellForce?: number; // עוצמת סוואל
+    swellDirection?: string; // כיוון סוואל
     current: 'none' | 'weak' | 'medium' | 'strong'; // זרם
   };
   

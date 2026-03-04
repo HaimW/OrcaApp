@@ -82,15 +82,16 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
     <>
       {children}
       
-      {/* User info bar */}
-      <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white text-center py-1 text-xs z-50">
-        <div className="flex items-center justify-between px-4">
-          <span>מחובר כ: {getUserDisplayName()}</span>
+      {/* User quick panel */}
+      <div className="fixed right-3 top-3 z-[60] rounded-full bg-blue-600/95 text-white shadow-lg backdrop-blur-sm">
+        <div className="flex items-center gap-2 px-3 py-1.5 text-xs">
+          <span className="max-w-[140px] truncate">מחובר כ: {getUserDisplayName()}</span>
           <button
             onClick={signOut}
-            className="flex items-center gap-1 hover:bg-blue-600 px-2 py-1 rounded"
+            className="flex items-center gap-1 rounded-full bg-blue-700 px-2 py-1 hover:bg-blue-800"
+            aria-label="יציאה"
           >
-            <FaSignOutAlt size={12} />
+            <FaSignOutAlt size={11} />
             יציאה
           </button>
         </div>
