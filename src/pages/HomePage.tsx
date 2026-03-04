@@ -1,206 +1,61 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDiveEntries, useAuth } from '../hooks';
-import Header from '../components/Layout/Header';
-import Card from '../components/UI/Card';
-import Button from '../components/UI/Button';
-import LoadingSpinner from '../components/UI/LoadingSpinner';
-import OrcaImage from '../components/UI/OrcaImage';
-import { 
-  FaPlus, 
-  FaList, 
-  FaChartBar, 
-  FaWater, 
-  FaFish, 
-  FaClock 
-} from 'react-icons/fa';
-import { format } from 'date-fns';
-import { he } from 'date-fns/locale';
+import { FaFish, FaHandsHelping, FaLifeRing, FaPlus, FaRoute, FaWater } from 'react-icons/fa';
+import { useAuth, useDiveEntries } from '../hooks';
+import MarketingNav from '../components/Layout/MarketingNav';
+import SiteFooter from '../components/Layout/SiteFooter';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { diveEntries, isLoading } = useDiveEntries();
+  const { diveEntries } = useDiveEntries();
   const { getUserDisplayName, isAnonymous } = useAuth();
-  
-  const recentEntries = diveEntries.slice(0, 3);
-  const totalDives = diveEntries.length;
-  const totalFish = diveEntries.reduce((sum, entry) => 
-    sum + entry.catches.reduce((catchSum, c) => catchSum + c.quantity, 0), 0
-  );
-  const avgDepth = diveEntries.length > 0 
-    ? diveEntries.reduce((sum, entry) => sum + entry.depth, 0) / diveEntries.length 
-    : 0;
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header title="אורקה - יומן צלילה" />
-        <div className="flex items-center justify-center h-64">
-          <LoadingSpinner size="lg" text="טוען נתונים..." />
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header title="אורקה - יומן צלילה" />
-      
-      <div className="mx-auto max-w-4xl space-y-6 p-4 pb-24">
-        {/* Welcome Section */}
-        <div className="rounded-3xl border border-slate-200 bg-white px-6 py-10 text-center shadow-sm">
-          <OrcaImage 
-            size="xl" 
-            shape="circle" 
-            className="mx-auto mb-5 ring-4 ring-slate-100"
-            showCredits={false}
-          />
-          <h2 className="mb-2 text-3xl font-bold tracking-tight text-slate-900">
-            ברוכים הבאים לאורקה
-          </h2>
-          <p className="text-slate-600">
-            {isAnonymous ? 'מצב אורח פעיל' : `שלום ${getUserDisplayName()}`} · יומן הצלילה המקצועי שלכם
-          </p>
-          <p className="mt-2 text-xs text-slate-400">
-            💡 לחצו על התמונה לתמונה חדשה
-          </p>
-        </div>
-
-        {/* Quick Actions */}
-        <Card>
-          <h3 className="mb-4 text-lg font-semibold text-slate-900">פעולות מהירות</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              variant="primary"
-              fullWidth
-              onClick={() => navigate('/add')}
-              className="h-14 rounded-xl"
-            >
-              <FaPlus size={20} />
-              <span>צלילה חדשה</span>
-            </Button>
-            <Button
-              variant="secondary"
-              fullWidth
-              onClick={() => navigate('/entries')}
-              className="h-14 rounded-xl"
-            >
-              <FaList size={20} />
-              <span>יומן צלילות</span>
-            </Button>
+    <div className="marketing-ltr min-h-screen bg-[#f8f8f3]">
+      <MarketingNav />
+      <main>
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#031a33] via-[#0a365c] to-[#0c5678] px-4 py-16 text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(45,212,191,.3),transparent_45%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(250,204,21,.18),transparent_42%)]" />
+          <div className="mx-auto max-w-6xl">
+            <p className="text-cyan-200">Trusted. Local. Ocean-first.</p>
+            <h1 className="font-display mt-2 max-w-3xl text-4xl leading-tight md:text-6xl">Freediving & Spearfishing Community built around safety.</h1>
+            <p className="mt-4 max-w-2xl text-slate-100">Modern training, responsible hunting ethics, and a connected dive log system for every member.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button onClick={() => navigate('/contact')} className="rounded-xl bg-amber-400 px-5 py-3 font-semibold text-slate-900">Join Orca's</button>
+              <button onClick={() => navigate('/add')} className="rounded-xl border border-cyan-200/50 bg-white/10 px-5 py-3">Log a dive</button>
+            </div>
+            <p className="mt-4 text-sm text-cyan-100">{isAnonymous ? 'Guest mode active' : `Welcome back, ${getUserDisplayName()}`} · {diveEntries.length} logged dives</p>
           </div>
-        </Card>
+        </section>
 
-        {/* Stats Overview */}
-        <Card>
-          <h3 className="mb-4 text-lg font-semibold text-slate-900">סטטיסטיקות כלליות</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="bg-slate-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                <FaWater className="text-slate-700" />
-              </div>
-              <div className="text-2xl font-bold text-slate-900">{totalDives}</div>
-              <div className="text-sm text-slate-600">צלילות</div>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-slate-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                <FaFish className="text-slate-700" />
-              </div>
-              <div className="text-2xl font-bold text-slate-900">{totalFish}</div>
-              <div className="text-sm text-slate-600">דגים</div>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-slate-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                <FaClock className="text-slate-700" />
-              </div>
-              <div className="text-2xl font-bold text-slate-900">{avgDepth.toFixed(1)}</div>
-              <div className="text-sm text-slate-600">עומק ממוצע</div>
+        <section className="mx-auto grid max-w-6xl gap-4 px-4 py-10 md:grid-cols-3">
+          {[{ icon: FaWater, title: 'Freediving', body: 'Breathing, equalization, depth confidence.' }, { icon: FaFish, title: 'Spearfishing', body: 'Ethical hunting, species knowledge, legal limits.' }, { icon: FaLifeRing, title: 'Safety', body: 'Buddy protocol, rescue drills, calm decision making.' }].map((item) => {
+            const Icon = item.icon;
+            return (
+              <article key={item.title} className="rounded-2xl bg-white p-5 shadow-sm">
+                <Icon className="text-cyan-700" />
+                <h2 className="mt-2 text-xl font-semibold">{item.title}</h2>
+                <p className="text-sm text-slate-600">{item.body}</p>
+              </article>
+            );
+          })}
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 pb-12">
+          <div className="rounded-3xl bg-slate-900 p-7 text-slate-100">
+            <h3 className="font-display text-2xl">Illustrated Guides</h3>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <div className="rounded-xl bg-slate-800 p-4"><FaRoute className="text-cyan-300" /> The freediver's journey</div>
+              <div className="rounded-xl bg-slate-800 p-4"><FaHandsHelping className="text-cyan-300" /> Responsible spearfisher cycle</div>
+              <div className="rounded-xl bg-slate-800 p-4"><FaPlus className="text-cyan-300" /> Daily ocean condition playbook</div>
             </div>
           </div>
-        </Card>
-
-        {/* Recent Entries */}
-        {recentEntries.length > 0 && (
-          <Card>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">צלילות אחרונות</h3>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/entries')}
-                className="text-slate-700"
-              >
-                צפייה בכל
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {recentEntries.map((entry) => (
-                <div
-                  key={entry.id}
-                  onClick={() => navigate(`/entries/${entry.id}`)}
-                  className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors hover:bg-slate-100 flex items-center justify-between"
-                >
-                  <div>
-                    <div className="font-medium text-slate-900">
-                      {entry.location}
-                    </div>
-                    <div className="text-sm text-slate-600">
-                      {format(new Date(entry.date), 'dd/MM/yyyy', { locale: he })}
-                    </div>
-                  </div>
-                  <div className="text-left">
-                    <div className="text-sm font-medium text-slate-700">
-                      {entry.depth} מ'
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      {entry.catches.length} דגים
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
-
-        {/* Empty State */}
-        {totalDives === 0 && (
-          <Card className="text-center py-8">
-            <FaWater size={48} className="text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-600 mb-2">
-              עדיין לא יש לכם צלילות
-            </h3>
-            <p className="text-slate-500 mb-4">
-              התחילו לתעד את חוויות הצלילה שלכם
-            </p>
-            <Button
-              variant="primary"
-              onClick={() => navigate('/add')}
-            >
-              <FaPlus size={16} />
-              הוספת צלילה ראשונה
-            </Button>
-          </Card>
-        )}
-
-        {/* Quick Stats Button */}
-        {totalDives > 0 && (
-          <Button
-            variant="secondary"
-            fullWidth
-            onClick={() => navigate('/stats')}
-            className="h-12 rounded-xl"
-          >
-            <FaChartBar size={20} />
-            <span>צפייה בסטטיסטיקות מפורטות</span>
-          </Button>
-        )}
-      </div>
+        </section>
+      </main>
+      <SiteFooter />
     </div>
   );
 };
 
 export default HomePage;
-
-

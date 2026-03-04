@@ -66,6 +66,8 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
                 <div className="text-gray-600 space-y-1">
                   <div>{date}</div>
                   <div>שעת כניסה: {time}</div>
+                  {entry.startTime && <div>התחלה: {entry.startTime}</div>}
+                  {entry.endTime && <div>סיום: {entry.endTime}</div>}
                 </div>
               </div>
 
@@ -165,15 +167,15 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-gray-600">רוח</span>
-                <span className="font-medium">{entry.weather.windSpeed} קמ״ש {entry.weather.windDirection}</span>
+                <span className="font-medium">{entry.weather.windSpeed} קמ״ש {entry.weather.windDirection} {entry.weather.windForce ? `· כוח ${entry.weather.windForce}` : ''}</span>
               </div>
-              
+
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-600">גלים</span>
-                <span className="font-medium">{entry.weather.waveHeight} מטר</span>
+                <span className="text-gray-600">סוואל / גלים</span>
+                <span className="font-medium">{entry.weather.waveHeight} מטר {entry.weather.swellDirection || ''} {entry.weather.swellForce ? `· כוח ${entry.weather.swellForce}` : ''}</span>
               </div>
             </div>
 

@@ -19,6 +19,8 @@ const AddEntryPage: React.FC = () => {
   const [formData, setFormData] = useState<Partial<DiveEntry>>({
     date: new Date().toISOString().split('T')[0],
     time: new Date().toTimeString().slice(0, 5),
+    startTime: new Date().toTimeString().slice(0, 5),
+    endTime: '',
     location: '',
     depth: 0,
     duration: 0,
@@ -28,8 +30,11 @@ const AddEntryPage: React.FC = () => {
       temperature: 25,
       waterTemperature: 22,
       windSpeed: 0,
+      windForce: 0,
       windDirection: 'צפון',
       waveHeight: 0,
+      swellForce: 0,
+      swellDirection: 'צפון',
       current: 'none',
     },
     equipment: {
