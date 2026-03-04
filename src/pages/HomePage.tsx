@@ -15,15 +15,15 @@ const HomePage: React.FC = () => {
       <MarketingNav />
       <main>
         <section className="relative overflow-hidden bg-gradient-to-b from-[#031a33] via-[#0a365c] to-[#0c5678] px-4 py-16 text-white">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(45,212,191,.3),transparent_45%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(250,204,21,.18),transparent_42%)]" />
-          <div className="mx-auto max-w-6xl">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(45,212,191,.3),transparent_45%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(250,204,21,.18),transparent_42%)]" />
+          <div className="relative z-10 mx-auto max-w-6xl">
             <p className="text-cyan-200">Trusted. Local. Ocean-first.</p>
             <h1 className="font-display mt-2 max-w-3xl text-4xl leading-tight md:text-6xl">Freediving & Spearfishing Community built around safety.</h1>
             <p className="mt-4 max-w-2xl text-slate-100">Modern training, responsible hunting ethics, and a connected dive log system for every member.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <button onClick={() => navigate('/contact')} className="rounded-xl bg-amber-400 px-5 py-3 font-semibold text-slate-900">Join Orca's</button>
-              <button onClick={() => navigate('/add')} className="rounded-xl border border-cyan-200/50 bg-white/10 px-5 py-3">Log a dive</button>
+              <button onClick={() => navigate('/entries')} className="rounded-xl border border-cyan-200/50 bg-white/10 px-5 py-3">Log a dive</button>
             </div>
             <p className="mt-4 text-sm text-cyan-100">{isAnonymous ? 'Guest mode active' : `Welcome back, ${getUserDisplayName()}`} · {diveEntries.length} logged dives</p>
           </div>
