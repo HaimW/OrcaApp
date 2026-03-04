@@ -28,43 +28,43 @@ const CommunityPage: React.FC = () => {
     if (!canSubmit) return;
     try {
       setIsSaving(true);
-      await CommunityCatchesService.addPost({ userName: getUserDisplayName() || 'צולל', species: species.trim(), weightKg: weightKg ? Number(weightKg) : undefined, location: location.trim(), catchDate, notes: notes.trim() });
+      await CommunityCatchesService.addPost({ userName: getUserDisplayName() || 'Spearo', species: species.trim(), weightKg: weightKg ? Number(weightKg) : undefined, location: location.trim(), catchDate, notes: notes.trim() });
       setSpecies(''); setWeightKg(''); setLocation(''); setNotes(''); setCatchDate(new Date().toISOString().slice(0, 10));
     } finally { setIsSaving(false); }
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f8f3]">
+    <div className="marketing-ltr min-h-screen bg-[#f8f8f3]">
       <MarketingNav />
       <main className="mx-auto max-w-6xl space-y-5 px-4 py-8">
         <section className="rounded-3xl bg-gradient-to-r from-[#07294a] to-[#115f7d] p-6 text-white">
-          <h1 className="font-display text-4xl">קהילה</h1>
-          <p className="mt-2 max-w-2xl text-cyan-100">אירועים, צלילות מקומיות, קבוצות וואטסאפ ושיתוף ידע מהשטח.</p>
+          <h1 className="font-display text-4xl">Community</h1>
+          <p className="mt-2 max-w-2xl text-cyan-100">Meetups, local dives, WhatsApp coordination, and shared learning from every session.</p>
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
           <Card>
-            <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-800"><FaUsers className="text-cyan-700"/>אירועים קרובים</h2>
-            <ul className="space-y-2 text-sm text-slate-600"><li>מפגש איזון וציפה · שישי</li><li>תדריך דייג אחראי · שני</li><li>התאמת באדי בקבוצת וואטסאפ · כל השבוע</li></ul>
+            <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-800"><FaUsers className="text-cyan-700"/>Upcoming</h2>
+            <ul className="space-y-2 text-sm text-slate-600"><li>Sunrise buoyancy meetup · Friday</li><li>Ethical spearfishing briefing · Monday</li><li>WhatsApp buddy-match open daily</li></ul>
           </Card>
 
           <Card>
-            <h2 className="mb-4 text-lg font-semibold text-gray-800">שיתוף תפיסה</h2>
+            <h2 className="mb-4 text-lg font-semibold text-gray-800">Post a Catch</h2>
             <form className="space-y-3" onSubmit={handleSubmit}>
-              <Input label="סוג דג" value={species} onChange={(e) => setSpecies(e.target.value)} required icon={<FaFish size={14} />} />
+              <Input label="Fish species" value={species} onChange={(e) => setSpecies(e.target.value)} required icon={<FaFish size={14} />} />
               <div className="grid grid-cols-2 gap-3">
-                <Input label="משקל (קג)" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} type="number" min="0" step="0.1" icon={<FaWeight size={14} />} />
-                <Input label="תאריך תפיסה" value={catchDate} onChange={(e) => setCatchDate(e.target.value)} type="date" required />
+                <Input label="Weight (kg)" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} type="number" min="0" step="0.1" icon={<FaWeight size={14} />} />
+                <Input label="Catch date" value={catchDate} onChange={(e) => setCatchDate(e.target.value)} type="date" required />
               </div>
-              <Input label="מיקום" value={location} onChange={(e) => setLocation(e.target.value)} required icon={<FaMapMarkerAlt size={14} />} />
-              <textarea className="input w-full min-h-[96px]" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="תנאים, ציוד ותובנות לקהילה" />
-              <Button type="submit" loading={isSaving} disabled={!canSubmit} fullWidth>פרסום</Button>
+              <Input label="Location" value={location} onChange={(e) => setLocation(e.target.value)} required icon={<FaMapMarkerAlt size={14} />} />
+              <textarea className="input w-full min-h-[96px]" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Conditions and lessons for the community" />
+              <Button type="submit" loading={isSaving} disabled={!canSubmit} fullWidth>Publish catch</Button>
             </form>
           </Card>
         </section>
 
         <Card>
-          <h2 className="mb-4 text-lg font-semibold text-gray-800">עדכונים אחרונים מהקהילה</h2>
+          <h2 className="mb-4 text-lg font-semibold text-gray-800">Latest Community Posts</h2>
           <div className="space-y-3">
             {posts.length === 0 && <p className="text-sm text-gray-500">אין עדיין פוסטים. היו הראשונים לשתף.</p>}
             {posts.map((post) => (

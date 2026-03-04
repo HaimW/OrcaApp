@@ -3,13 +3,12 @@ import { NavLink } from 'react-router-dom';
 import { FaWater } from 'react-icons/fa';
 
 const links = [
-  { to: '/', label: 'בית' },
-  { to: '/about', label: 'אודות' },
-  { to: '/courses', label: 'קורסים ותכניות' },
-  { to: '/community', label: 'קהילה' },
-  { to: '/gallery', label: 'גלריה' },
-  { to: '/contact', label: 'צור קשר / הרשמה' },
-  { to: '/entries', label: 'יומן צלילות' },
+  { to: '/', label: 'Home' },
+  { to: '/about', label: 'About' },
+  { to: '/courses', label: 'Courses' },
+  { to: '/community', label: 'Community' },
+  { to: '/gallery', label: 'Gallery' },
+  { to: '/contact', label: 'Contact / Signup' },
 ];
 
 const MarketingNav: React.FC = () => {
@@ -18,7 +17,7 @@ const MarketingNav: React.FC = () => {
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
         <NavLink to="/" className="flex items-center gap-2 text-slate-50">
           <FaWater className="text-cyan-300" />
-          <span className="font-display text-xl tracking-wide text-slate-50">אורקה</span>
+          <span className="font-display text-xl tracking-wide text-slate-50">Orca's</span>
         </NavLink>
         <nav className="flex gap-2 overflow-x-auto pb-1 text-sm md:text-base">
           {links.map((link) => (

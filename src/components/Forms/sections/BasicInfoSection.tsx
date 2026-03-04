@@ -63,6 +63,22 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           />
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="שעת התחלה"
+            type="time"
+            value={data.startTime || ''}
+            onChange={(e) => onUpdate('startTime', e.target.value)}
+          />
+
+          <Input
+            label="שעת סיום"
+            type="time"
+            value={data.endTime || ''}
+            onChange={(e) => onUpdate('endTime', e.target.value)}
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             מיקום צלילה
