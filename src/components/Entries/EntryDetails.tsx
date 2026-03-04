@@ -115,8 +115,8 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
                 <FaClock className="text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-600">משך</div>
-                <div className="font-semibold text-gray-800">{entry.duration} דקות</div>
+                <div className="text-sm text-gray-600">זמני צלילה</div>
+                <div className="font-semibold text-gray-800">{entry.startTime || '--:--'} - {entry.endTime || '--:--'}</div>
               </div>
             </div>
 

@@ -66,13 +66,13 @@ const CommunityPage: React.FC = () => {
         <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-800">Latest Community Posts</h2>
           <div className="space-y-3">
-            {posts.length === 0 && <p className="text-sm text-gray-500">No posts yet. Be first to share.</p>}
+            {posts.length === 0 && <p className="text-sm text-gray-500">אין עדיין פוסטים. היו הראשונים לשתף.</p>}
             {posts.map((post) => (
               <article key={post.id} className="rounded-lg border border-gray-100 bg-gray-50 p-3 space-y-1">
                 <div className="flex items-center justify-between"><h3 className="font-semibold text-gray-800">{post.species}</h3><span className="text-xs text-gray-500">{post.catchDate}</span></div>
                 <div className="text-sm text-gray-700 flex items-center gap-2"><FaUser className="text-gray-400" size={12} /> {post.userName}</div>
                 <div className="text-sm text-gray-700">📍 {post.location}</div>
-                {typeof post.weightKg === 'number' && <div className="text-sm text-gray-700">⚖️ {post.weightKg} kg</div>}
+                {typeof post.weightKg === 'number' && <div className="text-sm text-gray-700">⚖️ {post.weightKg} קג</div>}
                 {post.notes && <p className="text-sm text-gray-600">{post.notes}</p>}
               </article>
             ))}

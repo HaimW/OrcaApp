@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '../../UI/Card';
 import Input from '../../UI/Input';
 import { DiveEntry } from '../../../types';
-import { FaMapMarkerAlt, FaClock, FaWater, FaEye } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaWater, FaEye, FaRegClock } from 'react-icons/fa';
 import { DIVING_LOCATIONS } from '../../../utils/constants';
 
 interface BasicInfoSectionProps {
@@ -24,7 +24,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       </h3>
 
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Input
             label="תאריך"
             type="date"
@@ -33,14 +33,33 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.date}
             required
           />
-          
+
           <Input
-            label="שעה"
+            label="שעת כניסה כללית"
             type="time"
             value={data.time || ''}
             onChange={(e) => onUpdate('time', e.target.value)}
             error={errors.time}
             required
+            icon={<FaRegClock />}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Input
+            label="זמן תחילת צלילה"
+            type="time"
+            value={data.startTime || ''}
+            onChange={(e) => onUpdate('startTime', e.target.value)}
+            icon={<FaRegClock />}
+          />
+
+          <Input
+            label="זמן סיום צלילה"
+            type="time"
+            value={data.endTime || ''}
+            onChange={(e) => onUpdate('endTime', e.target.value)}
+            icon={<FaRegClock />}
           />
         </div>
 
@@ -87,7 +106,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Input
             label="עומק (מטר)"
             type="number"
@@ -99,18 +118,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             icon={<FaWater />}
             required
           />
-          
-          <Input
-            label="משך (דקות)"
-            type="number"
-            min="0"
-            value={data.duration || ''}
-            onChange={(e) => onUpdate('duration', parseInt(e.target.value) || 0)}
-            error={errors.duration}
-            icon={<FaClock />}
-            required
-          />
-          
+
           <Input
             label="ראות (מטר)"
             type="number"
@@ -155,5 +163,3 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
 };
 
 export default BasicInfoSection;
-
-

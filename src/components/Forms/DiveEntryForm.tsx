@@ -71,19 +71,35 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
       newErrors.depth = 'עומק חייב להיות גדול מ-0';
     }
 
-    if (!formData.duration || formData.duration <= 0) {
-      newErrors.duration = 'משך הצלילה חייב להיות גדול מ-0';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+
+  const calculateDurationMinutes = () => {
+    if (!formData.startTime || !formData.endTime) {
+      return formData.duration || 0;
+    }
+
+    const [startHour, startMin] = formData.startTime.split(':').map(Number);
+    const [endHour, endMin] = formData.endTime.split(':').map(Number);
+
+    const startTotal = startHour * 60 + startMin;
+    const endTotal = endHour * 60 + endMin;
+
+    if (Number.isNaN(startTotal) || Number.isNaN(endTotal)) {
+      return formData.duration || 0;
+    }
+
+    const diff = endTotal >= startTotal ? endTotal - startTotal : endTotal + 24 * 60 - startTotal;
+    return diff;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit(formData, { shareToWhatsapp });
+      onSubmit({ ...formData, duration: calculateDurationMinutes() }, { shareToWhatsapp });
     }
   };
 
