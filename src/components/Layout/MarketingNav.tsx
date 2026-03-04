@@ -3,12 +3,12 @@ import { NavLink } from 'react-router-dom';
 import { FaWater } from 'react-icons/fa';
 
 const links = [
-  { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' },
-  { to: '/courses', label: 'Courses' },
-  { to: '/community', label: 'Community' },
-  { to: '/gallery', label: 'Gallery' },
-  { to: '/contact', label: 'Contact / Signup' },
+  { to: '/', label: 'בית' },
+  { to: '/about', label: 'אודות' },
+  { to: '/courses', label: 'קורסים' },
+  { to: '/community', label: 'קהילה' },
+  { to: '/gallery', label: 'גלריה' },
+  { to: '/contact', label: 'יצירת קשר / הרשמה' },
 ];
 
 const MarketingNav: React.FC = () => {

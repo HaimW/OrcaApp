@@ -5,13 +5,13 @@ import SiteFooter from '../components/Layout/SiteFooter';
 
 const CoursesPage: React.FC = () => {
   return (
-    <div className="marketing-ltr min-h-screen bg-gradient-to-b from-[#041b34] via-[#083359] to-[#f8f8f3]">
+    <div className="min-h-screen bg-gradient-to-b from-[#041b34] via-[#083359] to-[#f8f8f3]">
       <MarketingNav />
       <main className="mx-auto max-w-6xl px-4 py-10">
-        <h1 className="font-display text-4xl text-white">Courses & Programs</h1>
-        <p className="mt-2 max-w-2xl text-cyan-100">Freediving, spearfishing, and safety modules for every level.</p>
+        <h1 className="font-display text-4xl text-white">קורסים ותוכניות</h1>
+        <p className="mt-2 max-w-2xl text-cyan-100">מודולים של צלילה חופשית, דיג בצלילה ובטיחות לכל רמה.</p>
         <section className="mt-8 grid gap-4 md:grid-cols-3">
-          {[{title:'Beginner',icon:FaWater,price:'From $290',size:'6-8 divers',focus:'Breathing, equalization, buddy basics'},{title:'Intermediate',icon:FaFish,price:'From $390',size:'4-6 divers',focus:'Depth adaptation and hunting control'},{title:'Advanced + Rescue',icon:FaHeartbeat,price:'From $520',size:'4 divers',focus:'Blackout prevention, rescue drills'}].map((course)=>{
+          {[{title:'מתחילים',icon:FaWater,price:'החל מ-$290',size:'6-8 צוללים',focus:'נשימה, השוואת לחצים ויסודות בן זוג'},{title:'מתקדמים',icon:FaFish,price:'החל מ-$390',size:'4-6 צוללים',focus:'הסתגלות לעומק ושליטה בציד'},{title:'מתקדם + חילוץ',icon:FaHeartbeat,price:'החל מ-$520',size:'4 צוללים',focus:'מניעת בלאקאאוט ותרגולי חילוץ'}].map((course)=>{
             const Icon=course.icon;
             return <article key={course.title} className="rounded-2xl bg-white p-5 shadow-lg">
               <Icon className="text-cyan-700" />
@@ -23,11 +23,11 @@ const CoursesPage: React.FC = () => {
           })}
         </section>
         <section className="mt-8 rounded-2xl bg-white p-6">
-          <h3 className="flex items-center gap-2 text-xl font-semibold"><FaCertificate className="text-cyan-700" />Illustrated pathways</h3>
+          <h3 className="flex items-center gap-2 text-xl font-semibold"><FaCertificate className="text-cyan-700" />מסלולי לימוד מאוירים</h3>
           <ul className="mt-3 list-disc space-y-2 pl-6 text-slate-700">
-            <li>The freediver's journey: beginner → intermediate → advanced.</li>
-            <li>The responsible spearfisher: safety, ethics, and environment loop.</li>
-            <li>Coastal conditions map: wind, swell, and visibility awareness.</li>
+            <li>מסלול צולל חופשי: מתחילים ← מתקדמים ← מתקדם.</li>
+            <li>דיג אחראי: בטיחות, אתיקה ומודעות סביבתית.</li>
+            <li>מפת תנאי חוף: רוח, גלים וראות בזמן אמת.</li>
           </ul>
         </section>
       </main>
