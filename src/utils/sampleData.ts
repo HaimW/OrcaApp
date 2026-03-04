@@ -6,7 +6,8 @@ export const sampleDiveEntries: DiveEntry[] = [
     id: uuidv4(),
     date: '2024-01-15',
     time: '08:30',
-    location: 'אילת - ספינת הדולפינים',
+    location: 'דרום',
+    detailedLocation: 'אילת - ספינת הדולפינים',
     coordinates: {
       lat: 29.5581,
       lng: 34.9482
@@ -18,10 +19,10 @@ export const sampleDiveEntries: DiveEntry[] = [
       condition: 'sunny',
       temperature: 28,
       waterTemperature: 24,
-      windSpeed: 5,
       windDirection: 'צפון',
-      waveHeight: 0.5,
-      current: 'weak'
+      windIntensity: 5,
+      currentDirection: 'צפון מערב',
+      currentIntensity: 2
     },
     equipment: {
       mask: 'מסכה סיליקון שחורה',
@@ -62,7 +63,8 @@ export const sampleDiveEntries: DiveEntry[] = [
     id: uuidv4(),
     date: '2024-01-20',
     time: '07:00',
-    location: 'חיפה - חוף דדו',
+    location: 'צפון',
+    detailedLocation: 'חיפה - חוף דדו',
     depth: 8,
     duration: 30,
     visibility: 5,
@@ -70,10 +72,10 @@ export const sampleDiveEntries: DiveEntry[] = [
       condition: 'cloudy',
       temperature: 22,
       waterTemperature: 19,
-      windSpeed: 15,
       windDirection: 'מערב',
-      waveHeight: 1.2,
-      current: 'medium'
+      windIntensity: 15,
+      currentDirection: 'מערב',
+      currentIntensity: 6
     },
     equipment: {
       mask: 'מסכה סיליקון שקופה',
@@ -105,7 +107,8 @@ export const sampleDiveEntries: DiveEntry[] = [
     id: uuidv4(),
     date: '2024-02-01',
     time: '09:15',
-    location: 'אשקלון - חוף דלילה',
+    location: 'מרכז',
+    detailedLocation: 'אשקלון - חוף דלילה',
     depth: 12,
     duration: 40,
     visibility: 8,
@@ -113,10 +116,10 @@ export const sampleDiveEntries: DiveEntry[] = [
       condition: 'sunny',
       temperature: 25,
       waterTemperature: 20,
-      windSpeed: 8,
       windDirection: 'דרום מערב',
-      waveHeight: 0.8,
-      current: 'weak'
+      windIntensity: 8,
+      currentDirection: 'דרום',
+      currentIntensity: 3
     },
     equipment: {
       mask: 'מסכה עם עדשות תיקון',

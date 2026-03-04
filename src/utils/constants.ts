@@ -16,11 +16,17 @@ export const FISHING_METHODS: FishingMethod[] = [
   { type: 'other', label: 'אחר', icon: 'other' },
 ];
 
-export const CURRENT_LEVELS = [
-  { value: 'none', label: 'ללא זרם' },
-  { value: 'weak', label: 'זרם חלש' },
-  { value: 'medium', label: 'זרם בינוני' },
-  { value: 'strong', label: 'זרם חזק' },
+export const LOCATION_REGIONS = ['צפון', 'מרכז', 'דרום'];
+
+export const COMPASS_DIRECTIONS = [
+  'צפון',
+  'צפון מזרח',
+  'מזרח',
+  'דרום מזרח',
+  'דרום',
+  'דרום מערב',
+  'מערב',
+  'צפון מערב',
 ];
 
 export const COMMON_FISH_SPECIES = [

@@ -3,7 +3,7 @@ import Card from '../../UI/Card';
 import Input from '../../UI/Input';
 import { DiveEntry } from '../../../types';
 import { FaMapMarkerAlt, FaWater, FaEye, FaRegClock } from 'react-icons/fa';
-import { DIVING_LOCATIONS } from '../../../utils/constants';
+import { LOCATION_REGIONS } from '../../../utils/constants';
 
 interface BasicInfoSectionProps {
   data: Partial<DiveEntry>;
@@ -24,7 +24,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       </h3>
 
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Input
             label="תאריך"
             type="date"
@@ -35,75 +35,56 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           />
 
           <Input
-            label="שעת כניסה כללית"
+            label="זמן כניסה"
             type="time"
-            value={data.time || ''}
-            onChange={(e) => onUpdate('time', e.target.value)}
-            error={errors.time}
+            value={data.startTime || ''}
+            onChange={(e) => onUpdate('startTime', e.target.value)}
+            error={errors.startTime}
+            required
+            icon={<FaRegClock />}
+          />
+
+          <Input
+            label="זמן יציאה"
+            type="time"
+            value={data.endTime || ''}
+            onChange={(e) => onUpdate('endTime', e.target.value)}
+            error={errors.endTime}
             required
             icon={<FaRegClock />}
           />
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Input
-            label="זמן תחילת צלילה"
-            type="time"
-            value={data.startTime || ''}
-            onChange={(e) => onUpdate('startTime', e.target.value)}
-            icon={<FaRegClock />}
-          />
-
-          <Input
-            label="זמן סיום צלילה"
-            type="time"
-            value={data.endTime || ''}
-            onChange={(e) => onUpdate('endTime', e.target.value)}
-            icon={<FaRegClock />}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="שעת התחלה"
-            type="time"
-            value={data.startTime || ''}
-            onChange={(e) => onUpdate('startTime', e.target.value)}
-          />
-
-          <Input
-            label="שעת סיום"
-            type="time"
-            value={data.endTime || ''}
-            onChange={(e) => onUpdate('endTime', e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            מיקום צלילה
-          </label>
-          <div className="relative">
-            <input
-              list="locations"
-              className="input pr-10"
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              מיקום כללי (פומבי)
+            </label>
+            <select
+              className="input"
               value={data.location || ''}
               onChange={(e) => onUpdate('location', e.target.value)}
-              placeholder="בחרו מיקום או הקלידו חדש..."
               required
-            />
-            <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <datalist id="locations">
-              {DIVING_LOCATIONS.map((location) => (
-                <option key={location} value={location} />
+            >
+              <option value="">בחר אזור</option>
+              {LOCATION_REGIONS.map((region) => (
+                <option key={region} value={region}>
+                  {region}
+                </option>
               ))}
-            </datalist>
+            </select>
+            {errors.location && (
+              <p className="text-sm text-coral-500 font-medium mt-1">{errors.location}</p>
+            )}
           </div>
-          {errors.location && (
-            <p className="text-sm text-coral-500 font-medium mt-1">
-              {errors.location}
-            </p>
-          )}
+
+          <Input
+            label="מיקום מדויק (פרטי)"
+            value={data.detailedLocation || ''}
+            onChange={(e) => onUpdate('detailedLocation', e.target.value)}
+            placeholder="לדוגמה: ריף הדולפינים - נקודה צפונית"
+            icon={<FaMapMarkerAlt />}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -128,34 +109,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             onChange={(e) => onUpdate('visibility', parseFloat(e.target.value) || 0)}
             icon={<FaEye />}
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            קואורדינטות (אופציונלי)
-          </label>
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              placeholder="קו רוחב"
-              type="number"
-              step="any"
-              value={data.coordinates?.lat || ''}
-              onChange={(e) => onUpdate('coordinates', {
-                ...data.coordinates,
-                lat: parseFloat(e.target.value) || undefined,
-              })}
-            />
-            <Input
-              placeholder="קו אורך"
-              type="number"
-              step="any"
-              value={data.coordinates?.lng || ''}
-              onChange={(e) => onUpdate('coordinates', {
-                ...data.coordinates,
-                lng: parseFloat(e.target.value) || undefined,
-              })}
-            />
-          </div>
         </div>
       </div>
     </Card>

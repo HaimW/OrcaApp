@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHome, FaList, FaPlus, FaChartBar, FaCog, FaShieldAlt, FaUsers } from 'react-icons/fa';
+import { FaList, FaPlus, FaChartBar, FaShieldAlt } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserProfile } from '../../hooks';
 
@@ -17,12 +17,9 @@ const BottomNav: React.FC = () => {
   const { isAdmin } = useUserProfile();
 
   const baseNavItems: NavItem[] = [
-    { path: '/', icon: FaHome, label: 'בית' },
     { path: '/entries', icon: FaList, label: 'יומן' },
     { path: '/add', icon: FaPlus, label: 'הוספה', isSpecial: true },
     { path: '/stats', icon: FaChartBar, label: 'סטטיסטיקות' },
-    { path: '/community', icon: FaUsers, label: 'קהילה' },
-    { path: '/settings', icon: FaCog, label: 'הגדרות' },
   ];
 
   const navItems: NavItem[] = isAdmin
@@ -57,11 +54,7 @@ const BottomNav: React.FC = () => {
                 size={item.isSpecial ? 24 : 20}
                 className={`mb-1 ${item.isSpecial ? 'text-white' : ''}`}
               />
-              <span
-                className={`text-xs font-medium ${
-                  item.isSpecial ? 'text-white' : ''
-                }`}
-              >
+              <span className={`text-xs font-medium ${item.isSpecial ? 'text-white' : ''}`}>
                 {item.label}
               </span>
             </button>

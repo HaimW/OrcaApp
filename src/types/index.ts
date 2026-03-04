@@ -5,7 +5,8 @@ export interface DiveEntry {
   time: string;
   startTime?: string;
   endTime?: string;
-  location: string;
+  location: string; // אזור פומבי: צפון/מרכז/דרום
+  detailedLocation?: string; // מיקום מדויק - פרטי
   coordinates?: {
     lat: number;
     lng: number;
@@ -21,13 +22,10 @@ export interface DiveEntry {
     condition: 'sunny' | 'cloudy' | 'rainy' | 'stormy' | 'foggy';
     temperature: number; // טמפרטורת אוויר
     waterTemperature: number; // טמפרטורת מים
-    windSpeed: number; // מהירות רוח
-    windForce?: number; // עוצמת רוח
     windDirection: string; // כיוון רוח
-    waveHeight: number; // גובה גלים
-    swellForce?: number; // עוצמת סוואל
-    swellDirection?: string; // כיוון סוואל
-    current: 'none' | 'weak' | 'medium' | 'strong'; // זרם
+    windIntensity: number; // עוצמת רוח
+    currentDirection: string; // כיוון זרם
+    currentIntensity: number; // עוצמת זרם
   };
   
   // ציוד
