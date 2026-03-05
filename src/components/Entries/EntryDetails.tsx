@@ -48,7 +48,7 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
     }
   };
 
-  const { date, time } = formatDateTime(entry.date, entry.time);
+  const { date } = formatDateTime(entry.date, entry.time);
   const totalCatches = entry.catches.reduce((sum, c) => sum + c.quantity, 0);
 
   return (
