@@ -51,7 +51,12 @@ const EntriesPage: React.FC = () => {
     if (filters.dateFrom && entry.date < filters.dateFrom) return false;
     if (filters.dateTo && entry.date > filters.dateTo) return false;
     if (filters.location && !entry.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
-    if (filters.fishingType && entry.fishingType !== filters.fishingType) return false;
+    if (filters.fishingType) {
+      const fishingTypes = entry.fishingTypes && entry.fishingTypes.length > 0
+        ? entry.fishingTypes
+        : [entry.fishingType];
+      if (!fishingTypes.includes(filters.fishingType)) return false;
+    }
     if (filters.minDepth && entry.depth < filters.minDepth) return false;
     if (filters.maxDepth && entry.depth > filters.maxDepth) return false;
     if (filters.minRating && entry.rating < filters.minRating) return false;

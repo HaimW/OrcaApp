@@ -4,7 +4,6 @@ import Input from '../../UI/Input';
 import {
   FaCloudSun,
   FaThermometerHalf,
-  FaWind,
   FaWater,
   FaSun,
   FaCloud,
@@ -44,12 +43,20 @@ const WeatherSection: React.FC<WeatherSectionProps> = ({
           <div className="grid grid-cols-5 gap-2">
             {WEATHER_CONDITIONS.map((condition) => {
               const Icon = weatherIcons[condition.condition];
-              const isSelected = data.condition === condition.condition;
+              const selectedConditions = data.conditions || (data.condition ? [data.condition] : []);
+              const isSelected = selectedConditions.includes(condition.condition);
               return (
                 <button
                   key={condition.condition}
                   type="button"
-                  onClick={() => onUpdate('condition', condition.condition)}
+                  onClick={() => {
+                    const selectedConditions = data.conditions || (data.condition ? [data.condition] : []);
+                    const nextConditions = isSelected
+                      ? selectedConditions.filter((value: string) => value !== condition.condition)
+                      : [...selectedConditions, condition.condition];
+                    onUpdate('conditions', nextConditions);
+                    onUpdate('condition', nextConditions[0] || 'sunny');
+                  }}
                   className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-2 ${
                     isSelected ? 'border-ocean-500 bg-ocean-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
@@ -95,15 +102,6 @@ const WeatherSection: React.FC<WeatherSectionProps> = ({
               ))}
             </select>
           </div>
-
-          <Input
-            label="רוח - עוצמה"
-            type="number"
-            min="0"
-            value={data.windIntensity || ''}
-            onChange={(e) => onUpdate('windIntensity', parseInt(e.target.value) || 0)}
-            icon={<FaWind />}
-          />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">זרם - כיוון</label>

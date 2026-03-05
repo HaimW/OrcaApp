@@ -20,6 +20,7 @@ export interface DiveEntry {
   // תנאי מזג אוויר
   weather: {
     condition: 'sunny' | 'cloudy' | 'rainy' | 'stormy' | 'foggy';
+    conditions?: ('sunny' | 'cloudy' | 'rainy' | 'stormy' | 'foggy')[];
     temperature: number; // טמפרטורת אוויר
     waterTemperature: number; // טמפרטורת מים
     windDirection: string; // כיוון רוח
@@ -39,6 +40,7 @@ export interface DiveEntry {
   
   // סוג דיג
   fishingType: 'speargun' | 'pole_spear' | 'hook' | 'net' | 'other';
+  fishingTypes?: ('speargun' | 'pole_spear' | 'hook' | 'net' | 'other')[];
   
   // תוצאות
   catches: Catch[];

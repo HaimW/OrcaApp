@@ -9,7 +9,6 @@ import {
   FaEye,
   FaThermometerHalf,
   FaCamera,
-  FaRegClock,
 } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { he } from 'date-fns/locale';
@@ -22,7 +21,10 @@ interface DiveEntryCardProps {
 
 const DiveEntryCard: React.FC<DiveEntryCardProps> = ({ entry, onClick }) => {
   const totalCatches = entry.catches.reduce((sum, c) => sum + c.quantity, 0);
-  const fishingMethod = FISHING_METHODS.find((m) => m.type === entry.fishingType);
+  const fishingMethods = (entry.fishingTypes && entry.fishingTypes.length > 0
+    ? entry.fishingTypes
+    : [entry.fishingType])
+    .map((type) => FISHING_METHODS.find((m) => m.type === type)?.label || type);
 
   const formatDate = (dateStr: string, timeStr: string) => {
     try {
@@ -79,26 +81,13 @@ const DiveEntryCard: React.FC<DiveEntryCardProps> = ({ entry, onClick }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded-lg bg-slate-50 px-3 py-2 text-slate-600">
-            <FaRegClock className="mb-1 inline text-cyan-700" />
-            <span className="mr-1">תחילה:</span>
-            <span className="font-semibold text-slate-800">{entry.startTime || '--:--'}</span>
-          </div>
-          <div className="rounded-lg bg-slate-50 px-3 py-2 text-slate-600">
-            <FaRegClock className="mb-1 inline text-cyan-700" />
-            <span className="mr-1">סיום:</span>
-            <span className="font-semibold text-slate-800">{entry.endTime || '--:--'}</span>
-          </div>
-        </div>
-
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 text-slate-600">
               <FaThermometerHalf size={12} />
               <span>{entry.weather.waterTemperature}°C</span>
             </div>
-            {fishingMethod && <div className="text-slate-600">{fishingMethod.label}</div>}
+            {fishingMethods.length > 0 && <div className="text-slate-600">{fishingMethods.join(' , ')}</div>}
           </div>
 
           {entry.photos.length > 0 && (

@@ -9,16 +9,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface CatchesSectionProps {
   catches: Catch[];
-  fishingType: string;
-  onFishingTypeChange: (type: string) => void;
+  fishingTypes: string[];
+  onFishingTypesChange: (types: string[]) => void;
   onAddCatch: (fishCatch: Catch) => void;
   onRemoveCatch: (catchId: string) => void;
 }
 
 const CatchesSection: React.FC<CatchesSectionProps> = ({
   catches,
-  fishingType,
-  onFishingTypeChange,
+  fishingTypes,
+  onFishingTypesChange,
   onAddCatch,
   onRemoveCatch,
 }) => {
@@ -28,7 +28,7 @@ const CatchesSection: React.FC<CatchesSectionProps> = ({
     weight: undefined,
     length: undefined,
     quantity: 1,
-    method: fishingType as any,
+    method: (fishingTypes[0] || 'speargun') as any,
     released: false,
     notes: '',
   });
@@ -39,7 +39,7 @@ const CatchesSection: React.FC<CatchesSectionProps> = ({
       weight: undefined,
       length: undefined,
       quantity: 1,
-      method: fishingType as any,
+      method: (fishingTypes[0] || 'speargun') as any,
       released: false,
       notes: '',
     });
@@ -54,7 +54,7 @@ const CatchesSection: React.FC<CatchesSectionProps> = ({
         weight: newCatch.weight,
         length: newCatch.length,
         quantity: newCatch.quantity || 1,
-        method: (newCatch.method || fishingType) as any,
+        method: (newCatch.method || fishingTypes[0] || 'speargun') as any,
         released: newCatch.released || false,
         notes: newCatch.notes,
       };
@@ -79,13 +79,21 @@ const CatchesSection: React.FC<CatchesSectionProps> = ({
           </label>
           <div className="grid grid-cols-2 gap-2">
             {FISHING_METHODS.map((method) => {
-              const isSelected = fishingType === method.type;
-              
+              const isSelected = fishingTypes.includes(method.type);
+
               return (
                 <button
                   key={method.type}
                   type="button"
-                  onClick={() => onFishingTypeChange(method.type)}
+                  onClick={() => {
+                    const nextTypes = isSelected
+                      ? fishingTypes.filter((type) => type !== method.type)
+                      : [...fishingTypes, method.type];
+                    onFishingTypesChange(nextTypes);
+                    if (!isSelected && !newCatch.method) {
+                      setNewCatch((prev) => ({ ...prev, method: method.type as any }));
+                    }
+                  }}
                   className={`p-3 rounded-lg border-2 transition-all text-center ${
                     isSelected
                       ? 'border-ocean-500 bg-ocean-50 text-ocean-700'
