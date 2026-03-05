@@ -9,10 +9,11 @@ import EntriesPage from './pages/EntriesPage';
 import AddEntryPage from './pages/AddEntryPage';
 import EntryDetailPage from './pages/EntryDetailPage';
 import StatsPage from './pages/StatsPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   const location = useLocation();
-  const showBottomNav = ['/entries', '/add', '/stats'].some((path) => location.pathname.startsWith(path));
+  const showBottomNav = ['/entries', '/add', '/stats', '/admin'].some((path) => location.pathname.startsWith(path));
 
   return (
     <ErrorBoundary>
@@ -27,6 +28,7 @@ function App() {
             <Route path="/add" element={<AddEntryPage />} />
             <Route path="/edit/:id" element={<AddEntryPage />} />
             <Route path="/stats" element={<StatsPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="*" element={<Navigate to="/entries" replace />} />
           </Routes>
           {showBottomNav && <BottomNav />}
