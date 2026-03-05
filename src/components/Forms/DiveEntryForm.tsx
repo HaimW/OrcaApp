@@ -59,14 +59,6 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
       newErrors.date = 'תאריך נדרש';
     }
 
-    if (!formData.startTime) {
-      newErrors.startTime = 'זמן כניסה נדרש';
-    }
-
-    if (!formData.endTime) {
-      newErrors.endTime = 'זמן יציאה נדרש';
-    }
-
     if (!formData.location?.trim()) {
       newErrors.location = 'מיקום נדרש';
     }
@@ -80,30 +72,11 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
   };
 
 
-  const calculateDurationMinutes = () => {
-    if (!formData.startTime || !formData.endTime) {
-      return formData.duration || 0;
-    }
-
-    const [startHour, startMin] = formData.startTime.split(':').map(Number);
-    const [endHour, endMin] = formData.endTime.split(':').map(Number);
-
-    const startTotal = startHour * 60 + startMin;
-    const endTotal = endHour * 60 + endMin;
-
-    if (Number.isNaN(startTotal) || Number.isNaN(endTotal)) {
-      return formData.duration || 0;
-    }
-
-    const diff = endTotal >= startTotal ? endTotal - startTotal : endTotal + 24 * 60 - startTotal;
-    return diff;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit({ ...formData, time: formData.startTime || formData.time || '', duration: calculateDurationMinutes() }, { shareToWhatsapp });
+      onSubmit({ ...formData, time: formData.time || '00:00', duration: formData.duration || 0 }, { shareToWhatsapp });
     }
   };
 
@@ -151,8 +124,11 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
       {/* Catches */}
       <CatchesSection
         catches={formData.catches || []}
-        fishingType={formData.fishingType || 'speargun'}
-        onFishingTypeChange={(type) => updateFormData('fishingType', type)}
+        fishingTypes={formData.fishingTypes || (formData.fishingType ? [formData.fishingType] : [])}
+        onFishingTypesChange={(types) => {
+          updateFormData('fishingTypes', types);
+          updateFormData('fishingType', types[0] || 'other');
+        }}
         onAddCatch={addCatch}
         onRemoveCatch={removeCatch}
       />

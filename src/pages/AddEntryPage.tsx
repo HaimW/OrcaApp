@@ -18,7 +18,7 @@ const AddEntryPage: React.FC = () => {
   
   const [formData, setFormData] = useState<Partial<DiveEntry>>({
     date: new Date().toISOString().split('T')[0],
-    startTime: new Date().toTimeString().slice(0, 5),
+    startTime: '',
     endTime: '',
     location: 'צפון',
     detailedLocation: '',
@@ -27,6 +27,7 @@ const AddEntryPage: React.FC = () => {
     visibility: 0,
     weather: {
       condition: 'sunny',
+      conditions: [],
       temperature: 25,
       waterTemperature: 22,
       windDirection: 'צפון',
@@ -42,6 +43,7 @@ const AddEntryPage: React.FC = () => {
       gear: [],
     },
     fishingType: 'speargun',
+    fishingTypes: [],
     catches: [],
     photos: [],
     notes: '',
