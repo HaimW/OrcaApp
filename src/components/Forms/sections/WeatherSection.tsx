@@ -4,7 +4,6 @@ import Input from '../../UI/Input';
 import {
   FaCloudSun,
   FaThermometerHalf,
-  FaWind,
   FaWater,
   FaSun,
   FaCloud,
@@ -103,15 +102,6 @@ const WeatherSection: React.FC<WeatherSectionProps> = ({
               ))}
             </select>
           </div>
-
-          <Input
-            label="רוח - עוצמה"
-            type="number"
-            min="0"
-            value={data.windIntensity || ''}
-            onChange={(e) => onUpdate('windIntensity', parseInt(e.target.value) || 0)}
-            icon={<FaWind />}
-          />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">זרם - כיוון</label>

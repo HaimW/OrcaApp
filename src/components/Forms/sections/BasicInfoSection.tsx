@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '../../UI/Card';
 import Input from '../../UI/Input';
 import { DiveEntry } from '../../../types';
-import { FaMapMarkerAlt, FaWater, FaEye, FaRegClock } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaWater, FaEye } from 'react-icons/fa';
 import { LOCATION_REGIONS } from '../../../utils/constants';
 
 interface BasicInfoSectionProps {
@@ -24,7 +24,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       </h3>
 
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4">
           <Input
             label="תאריך"
             type="date"
@@ -32,26 +32,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             onChange={(e) => onUpdate('date', e.target.value)}
             error={errors.date}
             required
-          />
-
-          <Input
-            label="זמן כניסה למים"
-            type="time"
-            value={data.startTime || ''}
-            onChange={(e) => onUpdate('startTime', e.target.value)}
-            error={errors.startTime}
-            required
-            icon={<FaRegClock />}
-          />
-
-          <Input
-            label="זמן יציאה מהמים"
-            type="time"
-            value={data.endTime || ''}
-            onChange={(e) => onUpdate('endTime', e.target.value)}
-            error={errors.endTime}
-            required
-            icon={<FaRegClock />}
           />
         </div>
 

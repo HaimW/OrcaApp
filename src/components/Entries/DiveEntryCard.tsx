@@ -9,7 +9,6 @@ import {
   FaEye,
   FaThermometerHalf,
   FaCamera,
-  FaRegClock,
 } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { he } from 'date-fns/locale';
@@ -79,20 +78,6 @@ const DiveEntryCard: React.FC<DiveEntryCardProps> = ({ entry, onClick }) => {
             <FaFish className="mx-auto mb-1 text-coral-500" size={16} />
             <div className="text-sm font-medium text-slate-800">{totalCatches}</div>
             <div className="text-xs text-slate-500">דגים</div>
-          </div>
-        </div>
-
-
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded-lg bg-slate-50 px-3 py-2 text-slate-600">
-            <FaRegClock className="mb-1 inline text-cyan-700" />
-            <span className="mr-1">כניסה:</span>
-            <span className="font-semibold text-slate-800">{entry.startTime || '--:--'}</span>
-          </div>
-          <div className="rounded-lg bg-slate-50 px-3 py-2 text-slate-600">
-            <FaRegClock className="mb-1 inline text-cyan-700" />
-            <span className="mr-1">יציאה:</span>
-            <span className="font-semibold text-slate-800">{entry.endTime || '--:--'}</span>
           </div>
         </div>
 

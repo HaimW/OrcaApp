@@ -68,8 +68,6 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
                 
                 <div className="text-gray-600 space-y-1">
                   <div>{date}</div>
-                  <div>זמן כניסה למים: {entry.startTime || '--:--'}</div>
-                  <div>זמן יציאה מהמים: {entry.endTime || '--:--'}</div>
                   {entry.detailedLocation && <div>מיקום מדויק (פרטי): {entry.detailedLocation}</div>}
                 </div>
               </div>
@@ -163,7 +161,7 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-gray-600">רוח</span>
-                <span className="font-medium">כיוון {entry.weather.windDirection} · עוצמה {entry.weather.windIntensity}</span>
+                <span className="font-medium">כיוון {entry.weather.windDirection}</span>
               </div>
 
             </div>
