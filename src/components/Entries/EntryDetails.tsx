@@ -4,7 +4,6 @@ import Card from '../UI/Card';
 import { 
   FaMapMarkerAlt, 
   FaWater, 
-  FaClock, 
   FaEye,
   FaThermometerHalf,
   FaWind,
@@ -29,8 +28,13 @@ interface EntryDetailsProps {
 const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
-  const fishingMethod = FISHING_METHODS.find(m => m.type === entry.fishingType);
-  const weatherCondition = WEATHER_CONDITIONS.find(w => w.condition === entry.weather.condition);
+  const fishingMethods = (entry.fishingTypes && entry.fishingTypes.length > 0
+    ? entry.fishingTypes
+    : [entry.fishingType]).map((type) => FISHING_METHODS.find((m) => m.type === type)?.label || type);
+
+  const weatherConditions = (entry.weather.conditions && entry.weather.conditions.length > 0
+    ? entry.weather.conditions
+    : [entry.weather.condition]).map((condition) => WEATHER_CONDITIONS.find((w) => w.condition === condition)?.label || condition);
 
   const formatDateTime = (dateStr: string, timeStr: string) => {
     try {
@@ -44,7 +48,7 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
     }
   };
 
-  const { date, time } = formatDateTime(entry.date, entry.time);
+  const { date } = formatDateTime(entry.date, entry.time);
   const totalCatches = entry.catches.reduce((sum, c) => sum + c.quantity, 0);
 
   return (
@@ -64,8 +68,8 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
                 
                 <div className="text-gray-600 space-y-1">
                   <div>{date}</div>
-                  <div>שעת כניסה: {entry.startTime || time}</div>
-                  <div>שעת יציאה: {entry.endTime || '--:--'}</div>
+                  <div>זמן כניסה למים: {entry.startTime || '--:--'}</div>
+                  <div>זמן יציאה מהמים: {entry.endTime || '--:--'}</div>
                   {entry.detailedLocation && <div>מיקום מדויק (פרטי): {entry.detailedLocation}</div>}
                 </div>
               </div>
@@ -110,16 +114,6 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
             </div>
 
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <FaClock className="text-blue-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">זמני צלילה</div>
-                <div className="font-semibold text-gray-800">{entry.startTime || '--:--'} - {entry.endTime || '--:--'}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <div className="bg-green-100 p-2 rounded-lg">
                 <FaEye className="text-green-600" />
               </div>
@@ -151,7 +145,7 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-600">מזג אוויר</span>
-              <span className="font-medium">{weatherCondition?.label}</span>
+              <span className="font-medium">{weatherConditions.join(' , ')}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -243,7 +237,7 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => {
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-3">
                 <span className="text-gray-600">שיטת דיג</span>
-                <span className="font-medium">{fishingMethod?.label}</span>
+                <span className="font-medium">{fishingMethods.join(' , ')}</span>
               </div>
 
               {entry.catches.map((catch_) => (

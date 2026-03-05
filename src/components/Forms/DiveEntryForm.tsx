@@ -60,11 +60,11 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
     }
 
     if (!formData.startTime) {
-      newErrors.startTime = 'זמן כניסה נדרש';
+      newErrors.startTime = 'זמן כניסה למים נדרש';
     }
 
     if (!formData.endTime) {
-      newErrors.endTime = 'זמן יציאה נדרש';
+      newErrors.endTime = 'זמן יציאה מהמים נדרש';
     }
 
     if (!formData.location?.trim()) {
@@ -95,8 +95,7 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
       return formData.duration || 0;
     }
 
-    const diff = endTotal >= startTotal ? endTotal - startTotal : endTotal + 24 * 60 - startTotal;
-    return diff;
+    return endTotal >= startTotal ? endTotal - startTotal : endTotal + 24 * 60 - startTotal;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -151,8 +150,11 @@ const DiveEntryForm: React.FC<DiveEntryFormProps> = ({
       {/* Catches */}
       <CatchesSection
         catches={formData.catches || []}
-        fishingType={formData.fishingType || 'speargun'}
-        onFishingTypeChange={(type) => updateFormData('fishingType', type)}
+        fishingTypes={formData.fishingTypes || (formData.fishingType ? [formData.fishingType] : [])}
+        onFishingTypesChange={(types) => {
+          updateFormData('fishingTypes', types);
+          updateFormData('fishingType', types[0] || 'other');
+        }}
         onAddCatch={addCatch}
         onRemoveCatch={removeCatch}
       />

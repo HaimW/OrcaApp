@@ -35,7 +35,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           />
 
           <Input
-            label="זמן כניסה"
+            label="זמן כניסה למים"
             type="time"
             value={data.startTime || ''}
             onChange={(e) => onUpdate('startTime', e.target.value)}
@@ -45,7 +45,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           />
 
           <Input
-            label="זמן יציאה"
+            label="זמן יציאה מהמים"
             type="time"
             value={data.endTime || ''}
             onChange={(e) => onUpdate('endTime', e.target.value)}

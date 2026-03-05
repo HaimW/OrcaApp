@@ -80,7 +80,12 @@ const StatsPage: React.FC = () => {
 
     const divesByMethod: Record<string, number> = {};
     visibleEntries.forEach((entry) => {
-      divesByMethod[entry.fishingType] = (divesByMethod[entry.fishingType] || 0) + 1;
+      const fishingTypes = entry.fishingTypes && entry.fishingTypes.length > 0
+        ? entry.fishingTypes
+        : [entry.fishingType];
+      fishingTypes.forEach((type) => {
+        divesByMethod[type] = (divesByMethod[type] || 0) + 1;
+      });
     });
 
     const thirtyDaysAgo = new Date();
