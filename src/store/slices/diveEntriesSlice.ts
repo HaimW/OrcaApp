@@ -76,9 +76,13 @@ export const importDiveEntriesAsync = createAsyncThunk(
   async (entries: DiveEntry[], { rejectWithValue }) => {
     try {
       await FirebaseService.importDiveEntries(entries);
-      // Fetch all entries after import
-      const allEntries = await FirebaseService.getAllDiveEntries();
-      return allEntries;
+      const userId = AuthService.getUserId();
+      if (!userId) {
+        return [] as DiveEntry[];
+      }
+
+      const userEntries = await FirebaseService.getDiveEntriesByUser(userId);
+      return userEntries;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to import dive entries');
     }
